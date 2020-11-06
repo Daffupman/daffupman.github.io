@@ -1,21 +1,94 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://daffupman.github.io</id>
-    <title></title>
-    <updated>2020-11-06T17:04:30.454Z</updated>
-    <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://daffupman.github.io"/>
-    <link rel="self" href="https://daffupman.github.io/atom.xml"/>
-    <logo>https://daffupman.github.io/images/avatar.png</logo>
-    <icon>https://daffupman.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2020, </rights>
-    <entry>
-        <title type="html"><![CDATA[MySQL拾贝]]></title>
-        <id>https://daffupman.github.io/mysql-shi-bei/</id>
-        <link href="https://daffupman.github.io/mysql-shi-bei/">
-        </link>
-        <updated>2020-11-06T14:36:10.000Z</updated>
-        <content type="html"><![CDATA[<p>MySQL是一款非常流行，免费高性能的数据库。但是在对了解MySQl之前，需要先了解一下数据库的基本概念，这在数据库领域是通识的。接着是对MySQL的一些基础做一下简单的介绍。再着就是MySQL的高级部分了，有索引优化，MySQL版本以及服务器的配置等介绍。</p>
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MySQL拾贝 | </title>
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604682267486">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="MySQL拾贝 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="MySQL是一款非常流行，免费高性能的数据库。但是在对了解MySQl之前，需要先了解一下数据库的基本概念，这在数据库领域是通识的。接着是对MySQL的一些基础做一下简单的介绍。再着就是MySQL的高级部分了，有索引优化，MySQL版本以及服..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://daffupman.github.io">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604682267486" alt="">
+  </a>
+  <h1 class="site-title">
+    
+  </h1>
+  <p class="site-description">
+    
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              MySQL拾贝
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-11-06
+              </span>
+              <span>
+                7 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>MySQL是一款非常流行，免费高性能的数据库。但是在对了解MySQl之前，需要先了解一下数据库的基本概念，这在数据库领域是通识的。接着是对MySQL的一些基础做一下简单的介绍。再着就是MySQL的高级部分了，有索引优化，MySQL版本以及服务器的配置等介绍。</p>
 <h2 id="什么是数据库">什么是数据库</h2>
 <p>数据库（Database），顾名思义，就是一个存储数据的仓库，本质上还是一个文件系统。但，它会按照特定的格式将数据存储起来，方便我们对数据库中的数据进行增加、删除、修改和查询等操作。</p>
 <p>计算机中主要有两个地方可以存储数据。一个是内存，一个是磁盘。数据存储在内存中会有这样明显的有点：存储和访问的速度很快，但是在断电和程序结束时，数据就会被清空。而且内存相对于磁盘来说，容量比较小，价格贵。把数据存储到磁盘上，是可以永久保存下去的，但是操作数据的速度就远没有存储在内存中那么快了。存储在内存或磁盘都是有各自的优点的，我们可以利用内存快的优点来存储一些访问频繁的数据，而不活跃的数据可以放到磁盘中。重要的数据还是要存储在磁盘中的。</p>
@@ -237,6 +310,85 @@ create table new_tb_name select * from old_tb_name;
 </code></pre>
 </li>
 </ul>
-]]></content>
-    </entry>
-</feed>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93">什么是数据库</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E7%B1%BB%E5%9E%8B">数据库的类型</a></li>
+<li><a href="#mysql%E5%AE%89%E8%A3%85">MySQL安装</a></li>
+<li><a href="#mysql%E5%B8%B8%E8%A7%81%E7%9A%84%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E">MySQL常见的存储引擎</a></li>
+<li><a href="#mysql%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B">MySQL的数据类型</a></li>
+<li><a href="#sql%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95">SQL常用语法</a>
+<ul>
+<li><a href="#%E8%A1%A8%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E7%9A%84%E6%93%8D%E4%BD%9C">表结构相关的操作</a></li>
+<li><a href="#%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E7%9A%84%E6%93%8D%E4%BD%9C">表数据相关的操作</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://daffupman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

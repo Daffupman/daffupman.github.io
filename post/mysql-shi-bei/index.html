@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL拾贝 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604681011199">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604681256163">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL拾贝 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604681011199" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604681256163" alt="">
   </a>
   <h1 class="site-title">
     
@@ -178,11 +178,11 @@ datadir=/usr/local/mysql-8.0.20/data</p>
 /usr/local/mysql-8.0.20/bin/mysql -uroot -p
 </code></pre>
 <p>进入mysql后，一定要先修改密码</p>
-<pre><code class="language-mysql"># 将root帐户的密码设置成root
+<pre><code class="language-bash"># 将root帐户的密码设置成root
 alter user 'root'@'localhost' identified by 'root';
 </code></pre>
 <p>此时也可以创建用户</p>
-<pre><code class="language-mysql"># 创建daff@localhost用户，密码是daff
+<pre><code class="language-bash"># 创建daff@localhost用户，密码是daff
 create user 'daff'@'localhost' identified by 'daff';
 # 给daff@localhost授予所有数据库的所有表的所有权限
 grant * on *.* to 'daff'@'localhost';
@@ -190,7 +190,7 @@ grant * on *.* to 'daff'@'localhost';
 flush privileges；
 </code></pre>
 <p>修改root用户可远程连接，对于所有要远程连接的帐户，都需要这样设置</p>
-<pre><code class="language-mysql"># 在所有的机器上都可以使用root身份连接过来
+<pre><code class="language-bash"># 在所有的机器上都可以使用root身份连接过来
 update mysq.user set host = '%' where user = 'root';
 # 设置远程连接的密码，使用mysql_native_password是为了和很多的数据库客户端兼容
 alter user 'root'@'%' identified with mysql_native_password by 'root';
@@ -279,7 +279,7 @@ alter user 'root'@'%' identified with mysql_native_password by 'root';
 <img src="https://raw.githubusercontent.com/daffupman/markdown-img/master/20201107002654.png" alt="修改表的语法" loading="lazy"></li>
 <li>删除表<br>
 <img src="https://raw.githubusercontent.com/daffupman/markdown-img/master/20201107002850.png" alt="删除表的语法" loading="lazy"></li>
-<li>查看表结构<pre><code class="language-mysql">desc tb_name;
+<li>查看表结构<pre><code class="language-bash">desc tb_name;
 # 查看表的ddl
 show create table tb_name;
 </code></pre>
@@ -303,7 +303,7 @@ show create table tb_name;
 <img src="https://raw.githubusercontent.com/daffupman/markdown-img/master/20201107003747.png" alt="修改SQL语法" loading="lazy"></li>
 <li>查询数据<br>
 <img src="https://raw.githubusercontent.com/daffupman/markdown-img/master/20201107003515.png" alt="查询SQL语法" loading="lazy"></li>
-<li>表的复制<pre><code class="language-mysql"># 复制表结构
+<li>表的复制<pre><code class="language-bash"># 复制表结构
 create table new_tb_name like old_tb_name;
 # 复制表结构和数据
 create table new_tb_name select * from old_tb_name;

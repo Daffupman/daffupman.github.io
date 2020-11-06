@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL拾贝 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604681256163">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604681362302">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL拾贝 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604681256163" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604681362302" alt="">
   </a>
   <h1 class="site-title">
     
@@ -127,7 +127,7 @@
 </table>
 <h2 id="mysql安装">MySQL安装</h2>
 <p>由于数据库一般都是放在linux上面的，这里就装在linux系统上面了，用的是centos7。首先要去官网下载安装，地址：https://downloads.mysql.com/archives/get/p/23/file/mysql-8.0.20-linux-glibc2.12-x86_64.tar.xz。然后上传到linux服务器上，我这里是放到opt目录下的，安装的具体步骤如下：</p>
-<ul>
+<ol>
 <li>
 <p>首先要解压文件，设置用户</p>
 <pre><code class="language-bash"># 进入opt目录
@@ -199,7 +199,7 @@ alter user 'root'@'%' identified with mysql_native_password by 'root';
 <p>如果远程客户端连接不上mysql，需要检查一下防火墙是否关闭或端口是否开放。</p>
 </blockquote>
 </li>
-</ul>
+</ol>
 <h2 id="mysql常见的存储引擎">MySQL常见的存储引擎</h2>
 <p>MySQL支持多种存储引擎，具体如下：</p>
 <table>

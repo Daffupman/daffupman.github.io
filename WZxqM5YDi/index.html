@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL的索引和SQL优化 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604760544566">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604760666626">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL的索引和SQL优化 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604760544566" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604760666626" alt="">
   </a>
   <h1 class="site-title">
     
@@ -117,15 +117,15 @@ set global log_queries_not_using_indexes = ON/OFF
 </code></pre>
 </li>
 <li>percona工具，这是第三方的，需要先下载(https://www.percona.com/downloads/percona-toolkit/3.2.1/binary/redhat/7/x86_64/percona-toolkit-3.2.1-1.el7.x86_64.rpm)：<pre><code class="language-bash">yum install -y perl-DBD-MySQL.x86_64 perl-DBI.x86 perl-Time-HiRes.x86_64 perl-IO-Socket-SSL.noarch perl-TermReadKey.x86_64 perl-Digest-MD5
- rpm -ivh percona-toolkit-3.2.1-1.el7.x86_64.rpm
+rpm -ivh percona-toolkit-3.2.1-1.el7.x86_64.rpm
 </code></pre>
 </li>
 </ul>
 <blockquote>
 <p>数据库实时监控sql语句：</p>
-<pre><code class="language-mysql">SELECT id, `user`, `host`, DB, command, `time`, state, info 
-FROM information_schema.PROCESSLIST
-WHERE TIME &gt;= 60;
+<pre><code class="language-mysql">  SELECT id, `user`, `host`, DB, command, `time`, state, info 
+  FROM information_schema.PROCESSLIST
+  WHERE TIME &gt;= 60;
 </code></pre>
 </blockquote>
 <h3 id="分析执行计划">分析执行计划</h3>

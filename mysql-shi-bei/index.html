@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL拾贝 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604717739719">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604723100150">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL拾贝 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604717739719" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604723100150" alt="">
   </a>
   <h1 class="site-title">
     
@@ -85,7 +85,7 @@
                 2020-11-06
               </span>
               <span>
-                7 min read
+                10 min read
               </span>
               
             </div>
@@ -315,6 +315,177 @@ create table new_tb_name like old_tb_name;
 create table new_tb_name select * from old_tb_name;
 </code></pre>
 </li>
+<li>视图<br>
+视图是一个逻辑的存储结构，也可以看出一张虚拟的表。可以像查询表一样查询视图。视图本身不存储数据。创建视图语法：<pre><code class="language-bash">CREATE VIEW view_name
+AS SELECT [ALL | DISTINCT | DISTINCTROW]
+select_expr [, select_expr ...]
+[FROM table_references]
+[WHERE where_condition]
+</code></pre>
+</li>
+</ul>
+<h2 id="系统函数">系统函数</h2>
+<p>MySQL提供了丰富的函数来处理数据，以下会罗列一些比较常用的函数。</p>
+<ul>
+<li>
+<p>时间函数</p>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CURDATE()/CURTIME()</td>
+<td style="text-align:left">返回当前日期/返回当前时间</td>
+</tr>
+<tr>
+<td>NOW()</td>
+<td style="text-align:left">返回当前的日期和时间</td>
+</tr>
+<tr>
+<td>DATE_FORMAT(date, fmt)</td>
+<td style="text-align:left">按照fmt的格式，对日期date进行格式化</td>
+</tr>
+<tr>
+<td>SEC_TO_TIME(seconds)</td>
+<td style="text-align:left">把秒数转换成时间（小时：分：秒）</td>
+</tr>
+<tr>
+<td>TIME_TO_SEC(seconds)</td>
+<td style="text-align:left">把时间（小时：分：秒）转换成秒数</td>
+</tr>
+<tr>
+<td>DATEDIFF(date1,date2)</td>
+<td style="text-align:left">返回date1和date2相差的天数</td>
+</tr>
+<tr>
+<td>DATE_ADD(date, INTERVAL expr unit)</td>
+<td style="text-align:left">对给定的日期增加或减少指定的时间单元（unit:DAY/HOUR/MINUTS/SECOND）</td>
+</tr>
+<tr>
+<td>EXTRACT(unit FROM date)</td>
+<td style="text-align:left">返回日期date的指定部分</td>
+</tr>
+</tbody>
+</table>
+<p>示例：</p>
+<pre><code class="language-bash">SELECT DATE_FORMAT(NOW(), '%Y / %m / %d  %H : %i : %s'); # 按格式输出 2020 / 10 / 22  05 : 38 : 43
+SELECT SEC_TO_TIME(60) # 输出 00:01:00
+SELECT TIME_TO_SEC('1:00:00') # 输出 3600
+
+SELECT NOW(),
+	DATE_ADD(NOW(), INTERVAL 1 DAY), # 当前时间加一天
+	DATE_ADD(NOW(), INTERVAL 1 YEAR),  # 当前时间加一年
+	DATE_ADD(NOW(), INTERVAL -1 DAY), # 当前时间减一天
+	DATE_ADD(NOW(), INTERVAL '-1:30' HOUR_MINUTE); # 当前时间减1.5h
+	
+SELECT EXTRACT(YEAR FROM now()) # 提取当前日期的年份
+</code></pre>
+</li>
+<li>
+<p>字符串函数</p>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CONCAT(str1, str2, ...)</td>
+<td>把字符串str1，str2等连接成一个字符串</td>
+</tr>
+<tr>
+<td>CONCAT_WS(sep, str1, str2, ...)</td>
+<td>用指定的分隔符sep连接字符串</td>
+</tr>
+<tr>
+<td>CHAR_LENGTH(str)</td>
+<td>返回字符串str的字符个数（1个字符=3个字节）</td>
+</tr>
+<tr>
+<td>LENGTH(str)</td>
+<td>返回字符串str的字节个数</td>
+</tr>
+<tr>
+<td>FORMAT(X, D [, locale])</td>
+<td>将数字N格式化</td>
+</tr>
+<tr>
+<td>LEFT(str, len) / RIGHT(str, len)</td>
+<td>从字符串的左/右起返回len长度的子字符串</td>
+</tr>
+<tr>
+<td>SUBSTRING(str, pos[, len])</td>
+<td>从字符串str的pos位置起返回长度为len的子串</td>
+</tr>
+<tr>
+<td>SUBSTRING_INDEX(str, delim, count)</td>
+<td>返回字符串str按delim分隔的前count个子字符串</td>
+</tr>
+<tr>
+<td>LOCATE(substr, str)</td>
+<td>在字符串str中返回子串substr第一次出现的位置</td>
+</tr>
+<tr>
+<td>TRIM([remstr FROM] str)</td>
+<td>删除字符串str两端的指定的remstr</td>
+</tr>
+</tbody>
+</table>
+<p>示例：</p>
+<pre><code class="language-bash">SELECT CONCAT_WS('-', class_name, title) FROM course;
+SELECT FORMAT(1234.567, 4); # 输出 1,234.5670
+SELECT SUBSTRING_INDEX('192.168.1.1', '.', -2) # 输出 0.100
+SELECT SUBSTRING('HELLO,WORLD', 1, LOCATE(',', 'HELLO,WORLD') - 1); # 输出 HELLO
+SELECT TRIM('  A   '); # 输出：A
+SELECT TRIM('B' FROM 'BBBABBB&quot;); # 输出：A
+</code></pre>
+</li>
+<li>
+<p>其他</p>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ROUND(X, D)</td>
+<td>对数值X进行四舍五入保留D为小数</td>
+</tr>
+<tr>
+<td>RAND()</td>
+<td>返回一个在0和1之间的随机数，使用在随机排序中时，性能会很差</td>
+</tr>
+<tr>
+<td>CASE WHEN [condition] THEN result [WHEN [condition] THEN result ...] [ELSE result] END</td>
+<td>case when</td>
+</tr>
+<tr>
+<td>MD5(str)</td>
+<td>返回str的MD5值</td>
+</tr>
+</tbody>
+</table>
+<p>示例：</p>
+<pre><code class="language-bash">SELECT user_name, 
+CASE WHEN gender = 1 THEN '男'
+WHEN gender = 0 THEN '女' ELSE '未知'
+END AS '性别'
+FROM user_things
+
+# 随机获取10条数据
+SELECT course_id FROM course
+ORDER BY RAND() LIMIT 10
+</code></pre>
+</li>
 </ul>
 
               </div>
@@ -333,6 +504,7 @@ create table new_tb_name select * from old_tb_name;
 <li><a href="#%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E7%9A%84%E6%93%8D%E4%BD%9C">表数据相关的操作</a></li>
 </ul>
 </li>
+<li><a href="#%E7%B3%BB%E7%BB%9F%E5%87%BD%E6%95%B0">系统函数</a></li>
 </ul>
 </li>
 </ul>

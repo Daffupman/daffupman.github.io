@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL拾贝 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604726708387">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604760406863">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL拾贝 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604726708387" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604760406863" alt="">
   </a>
   <h1 class="site-title">
     
@@ -85,7 +85,7 @@
                 2020-11-06
               </span>
               <span>
-                10 min read
+                12 min read
               </span>
               
                 <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag">
@@ -195,7 +195,7 @@ alter user 'root'@'localhost' identified by 'root';
 <pre><code class="language-bash"># 创建daff@localhost用户，密码是daff
 create user 'daff'@'localhost' identified by 'daff';
 # 给daff@localhost授予所有数据库的所有表的所有权限
-grant * on *.* to 'daff'@'localhost';
+grant *all privileges on *.* to 'daff'@'localhost';
 # 刷新权限，使得用户的权限生效
 flush privileges；
 </code></pre>
@@ -330,9 +330,7 @@ select_expr [, select_expr ...]
 </ul>
 <h2 id="系统函数">系统函数</h2>
 <p>MySQL提供了丰富的函数来处理数据，以下会罗列一些比较常用的函数。</p>
-<ul>
-<li>
-<p>时间函数</p>
+<h3 id="时间函数">时间函数</h3>
 <table>
 <thead>
 <tr>
@@ -381,16 +379,14 @@ SELECT SEC_TO_TIME(60) # 输出 00:01:00
 SELECT TIME_TO_SEC('1:00:00') # 输出 3600
 
 SELECT NOW(),
-	DATE_ADD(NOW(), INTERVAL 1 DAY), # 当前时间加一天
-	DATE_ADD(NOW(), INTERVAL 1 YEAR),  # 当前时间加一年
-	DATE_ADD(NOW(), INTERVAL -1 DAY), # 当前时间减一天
-	DATE_ADD(NOW(), INTERVAL '-1:30' HOUR_MINUTE); # 当前时间减1.5h
-	
+    DATE_ADD(NOW(), INTERVAL 1 DAY), # 当前时间加一天
+    DATE_ADD(NOW(), INTERVAL 1 YEAR),  # 当前时间加一年
+    DATE_ADD(NOW(), INTERVAL -1 DAY), # 当前时间减一天
+    DATE_ADD(NOW(), INTERVAL '-1:30' HOUR_MINUTE); # 当前时间减1.5h
+    
 SELECT EXTRACT(YEAR FROM now()) # 提取当前日期的年份
 </code></pre>
-</li>
-<li>
-<p>字符串函数</p>
+<h3 id="字符串函数">字符串函数</h3>
 <table>
 <thead>
 <tr>
@@ -449,9 +445,7 @@ SELECT SUBSTRING('HELLO,WORLD', 1, LOCATE(',', 'HELLO,WORLD') - 1); # 输出 HEL
 SELECT TRIM('  A   '); # 输出：A
 SELECT TRIM('B' FROM 'BBBABBB&quot;); # 输出：A
 </code></pre>
-</li>
-<li>
-<p>其他</p>
+<h3 id="其他">其他</h3>
 <table>
 <thead>
 <tr>
@@ -489,6 +483,50 @@ FROM user_things
 SELECT course_id FROM course
 ORDER BY RAND() LIMIT 10
 </code></pre>
+<h2 id="事务与并发控制">事务与并发控制</h2>
+<p>事务是数据库执行操作的最小的逻辑单元，事务可以由一个或多个SQL组成，这些事务的要么全部执行成功，要么全部执行失败。<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/image-20201026221028770.png" alt="事务相关命令" loading="lazy"></p>
+<h3 id="事务的特性">事务的特性</h3>
+<figure data-type="image" tabindex="1"><img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201026221301.png" alt="事务的特性" loading="lazy"></figure>
+<h3 id="并发问题">并发问题</h3>
+<ol>
+<li>脏读：一个事务读取了另一个事务未提交的数据；</li>
+<li>不可重复读：一个事务前后的两次读取，数据不一致；</li>
+<li>幻读：一个事务两次查询的结果集记录数不一致。</li>
+</ol>
+<p>InnoDB的隔离级别，默认是RR<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201026221301.png" alt="隔离级别" loading="lazy"></p>
+<p>查看事务的隔离级别</p>
+<pre><code class="language-bash">show variables like '%iso%';
+</code></pre>
+<p>设置事务的隔离级别<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/image-20201026222637025.png" alt="设置事务的隔离级别" loading="lazy"><br>
+InnoDB中的锁</p>
+<ul>
+<li>查询需要对资源加共享锁（S）</li>
+<li>数据修改需要对资源加排他锁（X）<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201026221301.png" alt="InnoDB中的锁" loading="lazy"></li>
+</ul>
+<p>阻塞和死锁</p>
+<ul>
+<li>
+<p>阻塞：由于不同锁之间的兼容关系，造成的一个事务需要等待另一个事务释放其所占用的资源的现象。</p>
+<pre><code class="language-mysql"># 使用以下SQL可以查找出，阻塞超过30s的线程
+ SELECT waiting_pid as '被阻塞的线程'，
+        waiting_query as '被阻塞的SQL'，
+        blocking_pid as '阻塞线程',
+        wait_age as '阻塞时间',
+        sql_kill_blocking_query as '建议操作'
+ FROM sys.innodb_lock_waits
+ WHERE (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(wait_started)) &gt; 30
+</code></pre>
+<p>出现阻塞时，可以手动杀掉占用资源的事务（kill query connection_id），当最好的办法是优化占用资源事务的SQL，使其尽快释放资源。</p>
+</li>
+<li>
+<p>死锁：并行执行的多个事务相互占用对方所需要的资源。</p>
+<pre><code class="language-mysql"># 把死锁记录到mysql的错误日志中
+ set global innodb_print_all_deadlocks=on;
+</code></pre>
 </li>
 </ul>
 
@@ -508,7 +546,19 @@ ORDER BY RAND() LIMIT 10
 <li><a href="#%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E7%9A%84%E6%93%8D%E4%BD%9C">表数据相关的操作</a></li>
 </ul>
 </li>
-<li><a href="#%E7%B3%BB%E7%BB%9F%E5%87%BD%E6%95%B0">系统函数</a></li>
+<li><a href="#%E7%B3%BB%E7%BB%9F%E5%87%BD%E6%95%B0">系统函数</a>
+<ul>
+<li><a href="#%E6%97%B6%E9%97%B4%E5%87%BD%E6%95%B0">时间函数</a></li>
+<li><a href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%87%BD%E6%95%B0">字符串函数</a></li>
+<li><a href="#%E5%85%B6%E4%BB%96">其他</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8B%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6">事务与并发控制</a>
+<ul>
+<li><a href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E7%89%B9%E6%80%A7">事务的特性</a></li>
+<li><a href="#%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98">并发问题</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

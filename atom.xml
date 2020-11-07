@@ -2,13 +2,152 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-07T05:25:55.643Z</updated>
+    <updated>2020-11-07T14:46:50.332Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
     <logo>https://daffupman.github.io/images/avatar.png</logo>
     <icon>https://daffupman.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, </rights>
+    <entry>
+        <title type="html"><![CDATA[MySQL的索引和SQL优化]]></title>
+        <id>https://daffupman.github.io/WZxqM5YDi/</id>
+        <link href="https://daffupman.github.io/WZxqM5YDi/">
+        </link>
+        <updated>2020-11-07T13:21:55.000Z</updated>
+        <content type="html"><![CDATA[<p>对于MySQL来说，可以使用sql语句查询出我们需要的数据，这是最基本的功能。在表中数据量比较小的情况下，SQL的性能差异并不明显，但是在表数据量比较大的时候，SQL执行的效率就有明显的时间差异。这里会记录我们如何发现SQL的性能问题，如何优化SQL以及优化的底层原理。</p>
+<h2 id="sql优化">SQL优化</h2>
+<h3 id="如何找出效率低的sql">如何找出效率低的SQL</h3>
+<p>要解决SQL效率低的问题就是如何发现哪些SQL导致了执行效率。常用的方法就是 <code>打开慢查询日志</code> ，方式如下：</p>
+<pre><code class="language-mysql"># 开启/关闭慢查询日志，默认off
+set global slow_query_log = ON/OFF
+# 设置慢查询日志的输出位置
+set global slow_query_log_file = log/slow_query.log
+# 设置慢查询的时间阀值，默认10秒，需要重新打开会话可见。测试的时候一般设置成1秒
+set global long_query_time = 1
+# 开启/关闭 记录没有使用索引的sql
+set global log_queries_not_using_indexes = ON/OFF
+</code></pre>
+<p>这样所有的慢查询sql都会记录到 <code>log/slow_query.log</code> 文件里了。我们可以直接阅读文件里的内容，来分析sql的执行问题。但是一般都是借助工具来分析，主要有两种工具：</p>
+<ul>
+<li>mysql的官方工具 <code>mysqldumpslow</code>，使用命令：<pre><code class="language-mysql">mysqldumpslow [OPTS...][LOGS...]
+</code></pre>
+</li>
+<li>percona工具，这是第三方的，需要先下载(https://www.percona.com/downloads/percona-toolkit/3.2.1/binary/redhat/7/x86_64/percona-toolkit-3.2.1-1.el7.x86_64.rpm)：<pre><code class="language-bash">yum install -y perl-DBD-MySQL.x86_64 perl-DBI.x86 perl-Time-HiRes.x86_64 perl-IO-Socket-SSL.noarch perl-TermReadKey.x86_64 perl-Digest-MD5
+ rpm -ivh percona-toolkit-3.2.1-1.el7.x86_64.rpm
+</code></pre>
+</li>
+</ul>
+<blockquote>
+<p>数据库实时监控sql语句：</p>
+<pre><code class="language-mysql">SELECT id, `user`, `host`, DB, command, `time`, state, info 
+FROM information_schema.PROCESSLIST
+WHERE TIME &gt;= 60;
+</code></pre>
+</blockquote>
+<h3 id="分析执行计划">分析执行计划</h3>
+<p>在获取到耗时较长的sql或我们刚写sql性能如何的时候，我们可以使用 <code>explain + SQL</code> 来输出sql的执行计划。<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201022224740.png" alt="explain语法" loading="lazy"><br>
+执行某条sql输出的执行计划示例：<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201025213701.png" alt="示例执行计划" loading="lazy"><br>
+可以看出执行计划有很多列，这里给出各个列的大致解释：</p>
+<ul>
+<li><code>id</code>：sql执行的顺序。id的值为一个数字或null。当id为一个数字的时候，表示查询执行的顺序；当id为null时，表示此行数据是由其他查询通过union出来的结果集。id值相同时，由上到下执行，id值不同，由大到小执行。</li>
+<li><code>select_type</code>：查询类型，可选的值有：
+<ul>
+<li>SIMPLE：不包含子查询或是UNION操作的查询，多表JOIN也是SIMPLE；</li>
+<li>PRIMARY：查询中如果包含任何子查询，那么最外层的查询则被标记为PRIMARY；</li>
+<li>SUBQUERY：SELECT列表中的子查询；</li>
+<li>DEPENDENT SUBQUERY：依赖外部结果的子查询；</li>
+<li>UNION：union操作的第二个或是之后的查询的值为union；</li>
+<li>DEPENDENT UNION：当union做为子查询时，第二个或第二个后的查询的select_type值；</li>
+<li>UNION RESULT：UNION产生的结果集；</li>
+<li>DERIVED：出现在FROM子句中的子查询。</li>
+</ul>
+</li>
+<li><code>table</code>：指明从哪个表中获取数据。&lt;unionM,N&gt;由id为M和N查询union产生的结果集。&lt;derived N&gt;/&lt;subquery N&gt; 由id为n的查询产生的结果。</li>
+<li><code>partitions</code>：对于分区表，显示查询的分区id；对于非分区表，显示NULL；</li>
+<li><code>type</code>：索引使用的类型。<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201025223733.png" alt="type列的值" loading="lazy"></li>
+<li><code>possible_keys</code>：查询中可能会用到的索引；</li>
+<li><code>key</code>：查询是实际用到的索引；</li>
+<li><code>key_len</code>：实际使用索引的最大长度，由字段长度决定的；</li>
+<li><code>ref</code>：表示哪些列或常量被用于索引查找；</li>
+<li><code>rows</code>：根据统计信息预估的扫描的行数；</li>
+<li><code>filtered</code>：表示返回结果的行数占需读取行数的百分比；</li>
+<li><code>extra</code>：sql查询的一些额外的信息，可能显示的如下
+<ul>
+<li>distinct：优化distinct操作，在找到第一匹配的元组后即停止；</li>
+<li>not exists：使用not exists来优化查询；</li>
+<li>using filesort：使用文件来进行排序，通常会出现在order by或group by查询中；</li>
+<li>using index：使用了覆盖索引进行查询；</li>
+<li>using temporary：MySQL需要使用临时表来处理查询，常见于排序，子查询和分组查询；</li>
+<li>using where：需要在MySQL服务器层使用where条件来过滤数据；</li>
+<li>select tables optimized away：直接通过索引来获得数据，不用访问表。</li>
+</ul>
+</li>
+</ul>
+<h3 id="如何优化sql">如何优化sql</h3>
+<p>可以从优化sql查询所涉及到的表中的索引或改写sql以达到更好的利用索引的目的。索引可以告诉存储引擎如何快速的查询到所需要的数据。InnoDB支持的索引类型有：</p>
+<ul>
+<li>Btree索引：平常使用中，如果没有说明索引的类型，一般都是Btree索引；
+<ul>
+<li>使用B+树的结构存储索引数据；</li>
+<li>适用于全值匹配的查询
+<blockquote>
+<p>class_name = 'mysql' 或 class_name in ('mysql', 'postgreSQL')</p>
+</blockquote>
+</li>
+<li>适合处理范围查找
+<blockquote>
+<p>study_cnt between 1000 and 3000 或 study_cnt &gt; 3000</p>
+</blockquote>
+</li>
+<li>Btree索引的从索引的最左侧开始匹配查找列</li>
+</ul>
+</li>
+<li>自适应Hash索引：为优化查询性能自动建立的，不需要开发人员或DBA手动管理；</li>
+<li>全文索引：使用elasticsearch或solr</li>
+<li>空间索引：地理位置的索引（不推荐）</li>
+</ul>
+<p>应该在什么列上建立索引？</p>
+<ol>
+<li>在where子句中的列，这些列是否有比较好的筛选性（列值的重复越小的，筛选性越好）</li>
+<li>包含在ORDER BY、GROUP BY、DISTINCT中的字段</li>
+<li>多表JOIN的关联列
+<blockquote>
+<p>创建索引：create index idx_xx ON table_name(column_name)<br>
+查看索引：show index from table_name<br>
+删除索引：alter table table_name drop index idx_xx</p>
+</blockquote>
+</li>
+</ol>
+<p>如何选择符合索引键的顺序？</p>
+<ol>
+<li>区分度最高的列放在联合索引的最左侧</li>
+<li>使用最频繁的列放到联合索引的最左侧</li>
+<li>尽量把字段长度小的列放在联合索引列的最左侧</li>
+</ol>
+<p>Btree索引的限制：</p>
+<ul>
+<li>只能从最左侧开始按索引键的顺序使用索引，不能跳过索引键</li>
+<li>NOT IN和&lt;&gt;操作无法使用索引</li>
+<li>索引列上不能使用表达式或者函数</li>
+</ul>
+<p>索引并非越多越好，索引可以提高查询效率，也会降低插入和更新的效率。使用IN查询是可以用到索引，但是IN查询列表很大，mysql引擎会认为使用全表扫描的效率更高而放弃使用索引。查询过滤的顺序也不必与索引键顺序相同才可以使用到索引，mysql引擎会自动调整顺序以适应索引顺序从而使用到索引。</p>
+<h3 id="改写sql">改写SQL</h3>
+<p>改写SQL的原则：</p>
+<ul>
+<li>使用outer join代替not in（MySQL8.0会自动转换）</li>
+<li>使用CTE代替子查询</li>
+<li>拆分复杂的大SQL为多个简单的小SQL</li>
+<li>使用计算列优化查询<pre><code class="language-mysql"># 可以生成一个total_score计算列。为计算列添加索引，可优化查询速度。
+ alter table imc_classvalue add column total_score DECIMAL(3,1) as (content_score + level_score + logic_score) 
+</code></pre>
+</li>
+</ul>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Shiro安全框架]]></title>
         <id>https://daffupman.github.io/a5-Z-yWdo/</id>
@@ -172,7 +311,7 @@ alter user 'root'@'localhost' identified by 'root';
 <pre><code class="language-bash"># 创建daff@localhost用户，密码是daff
 create user 'daff'@'localhost' identified by 'daff';
 # 给daff@localhost授予所有数据库的所有表的所有权限
-grant * on *.* to 'daff'@'localhost';
+grant *all privileges on *.* to 'daff'@'localhost';
 # 刷新权限，使得用户的权限生效
 flush privileges；
 </code></pre>
@@ -307,9 +446,7 @@ select_expr [, select_expr ...]
 </ul>
 <h2 id="系统函数">系统函数</h2>
 <p>MySQL提供了丰富的函数来处理数据，以下会罗列一些比较常用的函数。</p>
-<ul>
-<li>
-<p>时间函数</p>
+<h3 id="时间函数">时间函数</h3>
 <table>
 <thead>
 <tr>
@@ -358,16 +495,14 @@ SELECT SEC_TO_TIME(60) # 输出 00:01:00
 SELECT TIME_TO_SEC('1:00:00') # 输出 3600
 
 SELECT NOW(),
-	DATE_ADD(NOW(), INTERVAL 1 DAY), # 当前时间加一天
-	DATE_ADD(NOW(), INTERVAL 1 YEAR),  # 当前时间加一年
-	DATE_ADD(NOW(), INTERVAL -1 DAY), # 当前时间减一天
-	DATE_ADD(NOW(), INTERVAL '-1:30' HOUR_MINUTE); # 当前时间减1.5h
-	
+    DATE_ADD(NOW(), INTERVAL 1 DAY), # 当前时间加一天
+    DATE_ADD(NOW(), INTERVAL 1 YEAR),  # 当前时间加一年
+    DATE_ADD(NOW(), INTERVAL -1 DAY), # 当前时间减一天
+    DATE_ADD(NOW(), INTERVAL '-1:30' HOUR_MINUTE); # 当前时间减1.5h
+    
 SELECT EXTRACT(YEAR FROM now()) # 提取当前日期的年份
 </code></pre>
-</li>
-<li>
-<p>字符串函数</p>
+<h3 id="字符串函数">字符串函数</h3>
 <table>
 <thead>
 <tr>
@@ -426,9 +561,7 @@ SELECT SUBSTRING('HELLO,WORLD', 1, LOCATE(',', 'HELLO,WORLD') - 1); # 输出 HEL
 SELECT TRIM('  A   '); # 输出：A
 SELECT TRIM('B' FROM 'BBBABBB&quot;); # 输出：A
 </code></pre>
-</li>
-<li>
-<p>其他</p>
+<h3 id="其他">其他</h3>
 <table>
 <thead>
 <tr>
@@ -465,6 +598,50 @@ FROM user_things
 # 随机获取10条数据
 SELECT course_id FROM course
 ORDER BY RAND() LIMIT 10
+</code></pre>
+<h2 id="事务与并发控制">事务与并发控制</h2>
+<p>事务是数据库执行操作的最小的逻辑单元，事务可以由一个或多个SQL组成，这些事务的要么全部执行成功，要么全部执行失败。<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/image-20201026221028770.png" alt="事务相关命令" loading="lazy"></p>
+<h3 id="事务的特性">事务的特性</h3>
+<figure data-type="image" tabindex="1"><img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201026221301.png" alt="事务的特性" loading="lazy"></figure>
+<h3 id="并发问题">并发问题</h3>
+<ol>
+<li>脏读：一个事务读取了另一个事务未提交的数据；</li>
+<li>不可重复读：一个事务前后的两次读取，数据不一致；</li>
+<li>幻读：一个事务两次查询的结果集记录数不一致。</li>
+</ol>
+<p>InnoDB的隔离级别，默认是RR<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201026221301.png" alt="隔离级别" loading="lazy"></p>
+<p>查看事务的隔离级别</p>
+<pre><code class="language-bash">show variables like '%iso%';
+</code></pre>
+<p>设置事务的隔离级别<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/image-20201026222637025.png" alt="设置事务的隔离级别" loading="lazy"><br>
+InnoDB中的锁</p>
+<ul>
+<li>查询需要对资源加共享锁（S）</li>
+<li>数据修改需要对资源加排他锁（X）<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201026221301.png" alt="InnoDB中的锁" loading="lazy"></li>
+</ul>
+<p>阻塞和死锁</p>
+<ul>
+<li>
+<p>阻塞：由于不同锁之间的兼容关系，造成的一个事务需要等待另一个事务释放其所占用的资源的现象。</p>
+<pre><code class="language-mysql"># 使用以下SQL可以查找出，阻塞超过30s的线程
+ SELECT waiting_pid as '被阻塞的线程'，
+        waiting_query as '被阻塞的SQL'，
+        blocking_pid as '阻塞线程',
+        wait_age as '阻塞时间',
+        sql_kill_blocking_query as '建议操作'
+ FROM sys.innodb_lock_waits
+ WHERE (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(wait_started)) &gt; 30
+</code></pre>
+<p>出现阻塞时，可以手动杀掉占用资源的事务（kill query connection_id），当最好的办法是优化占用资源事务的SQL，使其尽快释放资源。</p>
+</li>
+<li>
+<p>死锁：并行执行的多个事务相互占用对方所需要的资源。</p>
+<pre><code class="language-mysql"># 把死锁记录到mysql的错误日志中
+ set global innodb_print_all_deadlocks=on;
 </code></pre>
 </li>
 </ul>

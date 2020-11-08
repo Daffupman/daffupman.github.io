@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL的索引和SQL优化 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604760666626">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1604847818668">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL的索引和SQL优化 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604760666626" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1604847818668" alt="">
   </a>
   <h1 class="site-title">
     
@@ -85,7 +85,7 @@
                 2020-11-07
               </span>
               <span>
-                7 min read
+                8 min read
               </span>
               
                 <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag">
@@ -221,14 +221,27 @@ rpm -ivh percona-toolkit-3.2.1-1.el7.x86_64.rpm
 <h3 id="改写sql">改写SQL</h3>
 <p>改写SQL的原则：</p>
 <ul>
-<li>使用outer join代替not in（MySQL8.0会自动转换）</li>
-<li>使用CTE代替子查询</li>
-<li>拆分复杂的大SQL为多个简单的小SQL</li>
-<li>使用计算列优化查询<pre><code class="language-bash"># 可以生成一个total_score计算列。为计算列添加索引，可优化查询速度。
+<li>
+<p>使用outer join代替not in（MySQL8.0会自动转换）</p>
+</li>
+<li>
+<p>使用CTE代替子查询</p>
+</li>
+<li>
+<p>拆分复杂的大SQL为多个简单的小SQL</p>
+</li>
+<li>
+<p>使用计算列优化查询</p>
+<pre><code class="language-bash"># 可以生成一个total_score计算列。为计算列添加索引，可优化查询速度。
   alter table imc_classvalue add column total_score DECIMAL(3,1) as (content_score + level_score + logic_score) 
 </code></pre>
+<h3 id="表设计的优化">表设计的优化</h3>
 </li>
 </ul>
+<ol>
+<li>表属性尽量不要设置为NULL。<br>
+NULL是默认行为，如果不指定列字段为NOT NULL的，那么它就是NULL的。NULL并非不占用存储空间，反而需要MySQL需要额外的存储空间和逻辑处理，而且对于可为null的索引列，其使用和统计都会更加复杂。NULL参与的查询是需要使用IS NULL/IS NOT NULL作为条件的；当索引为NULL的值作为条件时，这个sql不会用到索引，NULL参与的计算，其结果都为NULL，聚合查询的结果都会忽略值NULL的记录；在排序中NULL值所在列也会排在最前面。</li>
+</ol>
 
               </div>
               <div class="toc-container">
@@ -241,6 +254,7 @@ rpm -ivh percona-toolkit-3.2.1-1.el7.x86_64.rpm
 <li><a href="#%E5%88%86%E6%9E%90%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92">分析执行计划</a></li>
 <li><a href="#%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96sql">如何优化sql</a></li>
 <li><a href="#%E6%94%B9%E5%86%99sql">改写SQL</a></li>
+<li><a href="#%E8%A1%A8%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%BC%98%E5%8C%96">表设计的优化</a></li>
 </ul>
 </li>
 </ul>

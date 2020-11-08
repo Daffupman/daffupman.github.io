@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-07T14:51:09.484Z</updated>
+    <updated>2020-11-08T15:03:43.911Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -138,14 +138,27 @@ rpm -ivh percona-toolkit-3.2.1-1.el7.x86_64.rpm
 <h3 id="改写sql">改写SQL</h3>
 <p>改写SQL的原则：</p>
 <ul>
-<li>使用outer join代替not in（MySQL8.0会自动转换）</li>
-<li>使用CTE代替子查询</li>
-<li>拆分复杂的大SQL为多个简单的小SQL</li>
-<li>使用计算列优化查询<pre><code class="language-bash"># 可以生成一个total_score计算列。为计算列添加索引，可优化查询速度。
+<li>
+<p>使用outer join代替not in（MySQL8.0会自动转换）</p>
+</li>
+<li>
+<p>使用CTE代替子查询</p>
+</li>
+<li>
+<p>拆分复杂的大SQL为多个简单的小SQL</p>
+</li>
+<li>
+<p>使用计算列优化查询</p>
+<pre><code class="language-bash"># 可以生成一个total_score计算列。为计算列添加索引，可优化查询速度。
   alter table imc_classvalue add column total_score DECIMAL(3,1) as (content_score + level_score + logic_score) 
 </code></pre>
+<h3 id="表设计的优化">表设计的优化</h3>
 </li>
 </ul>
+<ol>
+<li>表属性尽量不要设置为NULL。<br>
+NULL是默认行为，如果不指定列字段为NOT NULL的，那么它就是NULL的。NULL并非不占用存储空间，反而需要MySQL需要额外的存储空间和逻辑处理，而且对于可为null的索引列，其使用和统计都会更加复杂。NULL参与的查询是需要使用IS NULL/IS NOT NULL作为条件的；当索引为NULL的值作为条件时，这个sql不会用到索引，NULL参与的计算，其结果都为NULL，聚合查询的结果都会忽略值NULL的记录；在排序中NULL值所在列也会排在最前面。</li>
+</ol>
 ]]></content>
     </entry>
     <entry>

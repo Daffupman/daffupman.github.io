@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-08T15:03:43.911Z</updated>
+    <updated>2020-11-09T14:01:10.002Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -138,26 +138,62 @@ rpm -ivh percona-toolkit-3.2.1-1.el7.x86_64.rpm
 <h3 id="改写sql">改写SQL</h3>
 <p>改写SQL的原则：</p>
 <ul>
-<li>
-<p>使用outer join代替not in（MySQL8.0会自动转换）</p>
-</li>
-<li>
-<p>使用CTE代替子查询</p>
-</li>
-<li>
-<p>拆分复杂的大SQL为多个简单的小SQL</p>
-</li>
-<li>
-<p>使用计算列优化查询</p>
-<pre><code class="language-bash"># 可以生成一个total_score计算列。为计算列添加索引，可优化查询速度。
+<li>使用outer join代替not in（MySQL8.0会自动转换）</li>
+<li>使用CTE代替子查询</li>
+<li>拆分复杂的大SQL为多个简单的小SQL</li>
+<li>使用计算列优化查询<pre><code class="language-bash"># 可以生成一个total_score计算列。为计算列添加索引，可优化查询速度。
   alter table imc_classvalue add column total_score DECIMAL(3,1) as (content_score + level_score + logic_score) 
 </code></pre>
-<h3 id="表设计的优化">表设计的优化</h3>
 </li>
 </ul>
+<h3 id="表设计的优化">表设计的优化</h3>
 <ol>
-<li>表属性尽量不要设置为NULL。<br>
-NULL是默认行为，如果不指定列字段为NOT NULL的，那么它就是NULL的。NULL并非不占用存储空间，反而需要MySQL需要额外的存储空间和逻辑处理，而且对于可为null的索引列，其使用和统计都会更加复杂。NULL参与的查询是需要使用IS NULL/IS NOT NULL作为条件的；当索引为NULL的值作为条件时，这个sql不会用到索引，NULL参与的计算，其结果都为NULL，聚合查询的结果都会忽略值NULL的记录；在排序中NULL值所在列也会排在最前面。</li>
+<li>
+<p>表属性尽量不要设置为NULL。<br>
+NULL是默认行为，如果不指定列字段为NOT NULL的，那么它就是NULL的。NULL并非不占用存储空间，反而需要MySQL需要额外的存储空间和逻辑处理，而且对于可为null的索引列，其使用和统计都会更加复杂。NULL参与的查询是需要使用IS NULL/IS NOT NULL作为条件的；当索引为NULL的值作为条件时，这个sql不会用到索引，NULL参与的计算，其结果都为NULL，聚合查询的结果都会忽略值NULL的记录；在排序中NULL值所在列也会排在最前面。</p>
+</li>
+<li>
+<p>不随意设置数据类型<br>
+创建表时要指定主键，主键不应该具有业务含义。虽然MySQL允许创建表时不指定主键，但是在表中没有非空整型唯一索引的时候InnoDB会自动添加隐式主键。<br>
+选择合适的数据类型和恰当的取值范围。使用存储所需的最小数据类型；选择简单的数据类型；存储小数直接选择decimal；尽量避免使用text和blob。<br>
+不建议使用枚举ENUM类型。枚举类型的值都是从允许值列表中选择的，这个列表在创建表结构就定义好了。枚举的优点是：枚举存储是数字，数据会更加紧凑；允许值提前定义，MySQL可以检查出数据的正确性。查询枚举列值的时候，默认显示的是枚举的值，如果想查询枚举的索引，需要给列加0。比如<code>select name, gender from user;</code> 可以查出枚举列gender的枚举值，而 <code>select name, gender + 0 from user;</code> 可以查出枚举列gender的枚举索引。使用枚举同样需要注意：</p>
+<ul>
+<li>对枚举列使用sum、avg等聚合函数的时候，会使用枚举列的索引。因为聚合函数的参数是数字；</li>
+<li>对枚举列排序的时候，是根据其索引排序的；如果要按值排序，需要使用concat函数；</li>
+<li>如果将数据存储到ENUM列中，则将数字视为可能值得索引，存储的值是具有该索引的枚举成员。如果存储的是字符串的数字，MySQL会先转成数值类型，去匹配索引序号。</li>
+</ul>
+</li>
+<li>
+<p>正确的使用索引。<br>
+字符串类型的查询的时候没有使用引号，是不会使用索引的。where条件左边的字段参与了函数或数学运算，不会使用索引；联合索引最左前缀顺序不匹配，不使用索引。<br>
+不再使用的索引需要及时删除，否则MySQL需要维护索引，浪费空间和性能。为选择性低的列创建索引意义不大。列值过长，可以选择部分前缀作为索引，而不是整列加上索引。表记录不超过1000行，不需要创建索引。一张表的索引不要超过5个。</p>
+<blockquote>
+<p>select count(distinct(concat(first_name, left(last_name, 3))))/count(*) from user;  # 查询出的值越接近1，代表选择性越好</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="其他地方的优化">其他地方的优化</h3>
+<ol>
+<li>
+<p>MySQL连接设置<br>
+MySQL默认的连接超时是8小时(28800秒)，对应的配置参数是 <code>wait_timeout</code>。一般在连接的参数配置做自动重连。</p>
+<blockquote>
+<p>jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&amp;chararchterEncoding=utf8&amp;autoReconnect=true</p>
+</blockquote>
+<p>但是autoReconnect是有副作用的。原有连接上的事务将会被回滚，连接中持有的表将会全部释放，连接关联的会话session将会丢失，连接中定义的用户变量将会丢失，连接中定义的预编译SQL将会丢失。可以修改MySQL配置，避免断开连接。</p>
+<blockquote>
+<p>[mysqld]<br>
+wait_timeout = 288000<br>
+interactive_timeout = 28800</p>
+</blockquote>
+<p>连接池的配置同样也会影响连接，如HikariCP配置：</p>
+<ul>
+<li>maximum-pool-size：最大连接数目。超过这个数目，新的数据库访问线程会被阻塞。推荐大小为cpu核心数*2+硬盘数；</li>
+<li>minimum-idle：最小连接数目；</li>
+<li>max-lifetime：最大连接生命时间，用来设置一个connection在连接池中的存活时间；</li>
+<li>idle-timeout：一个链接idle状态的最大时长，超时则被释放。</li>
+</ul>
+</li>
 </ol>
 ]]></content>
     </entry>

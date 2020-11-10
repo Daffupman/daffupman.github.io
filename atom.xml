@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-10T14:13:50.017Z</updated>
+    <updated>2020-11-10T14:27:17.573Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -194,11 +194,11 @@ dir ./<br>
 save 900 1<br>
 save 300 10<br>
 save 60 10000<br>
-#当redis无法写入磁盘的话，直接关闭redis的写操作<br>
+#当redis无法写入磁盘的话，直接关闭redis的写操作。可能造成数据不一致<br>
 stop-writes-on-bgsave-error yes<br>
-#进行RDB保存时将文件压缩<br>
+#进行RDB保存时将文件压缩，会消耗一些cpu的资源<br>
 rdbcompression yes<br>
-#关闭rdb存储数据时的数据校验，可提升性能<br>
+#关闭rdb存储数据时的数据校验，可提升性能，开启的话会有10%的性能损耗<br>
 rdbchecksum no</p>
 </blockquote>
 <h4 id="备份与恢复">备份与恢复</h4>
@@ -213,19 +213,22 @@ cp *.rdb /target	# 复制备份文件到其他目录
 <ul>
 <li>优点
 <ul>
-<li>节省磁盘空间</li>
-<li>恢复速度快</li>
+<li>每隔一段时间全量备份数据</li>
+<li>灾备简单，可远程传输</li>
+<li>子进程备份的时候，主进程不会有任何io，保证数据的完整性</li>
+<li>相对于aof，可以快速重启恢复大文件</li>
 </ul>
 </li>
 <li>缺点
 <ul>
-<li>redis中的数据比较庞大时，性能有所消耗</li>
-<li>会丢失掉最后一次snapshot</li>
+<li>相对于aof，可以快速重启恢复大文件</li>
+<li>子进程会和父进程占用的大小一样的内存，cpu压力大</li>
+<li>不能实时备份</li>
 </ul>
 </li>
 </ul>
 <h3 id="aofappend-of-file">AOF（Append Of File）</h3>
-<p>以日志的形式来记录每个<mark>写操作</mark>。将redis执行的每一个写指令（读指令不管）记录在文件里，该文件只能追加，不能更改。redis在启动之初，会读取日志文件，重新执行所有的命令。AOF默认不开启，需要修改配置文件。</p>
+<p>以日志的形式来记录每个写操作。将redis执行的每一个写指令（读指令不管）记录在文件里，该文件只能追加，不能更改。redis在启动之初，会读取日志文件，重新执行所有的命令。AOF默认不开启，需要修改配置文件。</p>
 <blockquote>
 <p>#开启aof<br>
 appendonly yes<br>
@@ -233,34 +236,40 @@ appendonly yes<br>
 appendfilename &quot;appendfileonly.aof&quot;</p>
 </blockquote>
 <p>apf的备份与恢复与rdb一样。当同时开启aof和rdb，系统默认读取aof的数据。如果aof文件损害，使用以下命令恢复：<code>redis-check-aof --fix appendonly.aof</code>。</p>
-<h4 id="aof同步频率设置">aof同步频率设置</h4>
+<h4 id="aof的配置">aof的配置</h4>
 <blockquote>
 <p>#appendfsync always<br>
 appendfsync everysec	# 不确定则使用这个，每秒进行一次备份<br>
 #appendfsync no</p>
+<p>#重写的时候是否要同步，no可以保证数据安全<br>
+no-appendfsync-on-rewrite no</p>
+<p>#重写机制：避免文件越来越大，自动优化压缩指令，会fork一个新的进程去完成重写动作，新进程里的内存数据会被重写，此时旧的aof文件不会被读取使用，类似rdb<br>
+#当前AOF文件的大小是上次AOF大小的100% 并且文件体积达到64m，满足两者则触发重写<br>
+auto-aof-rewrite-percentage 100<br>
+auto-aof-rewrite-min-size 64mb</p>
 </blockquote>
 <h4 id="aof的优点和缺点">aof的优点和缺点</h4>
 <ul>
 <li>优点：
 <ul>
-<li>备份机制更稳健，丢失概率更低；</li>
-<li>可读的日志文本，可以处理错误操作</li>
+<li>aof操作可以增加数据的可靠性和完整性，还可以异步操作；</li>
+<li>以日志的形式追加，在磁盘满的时候，会执行redis-check-aof；</li>
+<li>数据大的时候，redis会自动重写aof，重写是安全的，不会影响到客户端的读写；</li>
 </ul>
 </li>
 <li>缺点：
 <ul>
-<li>比rdb更占存储</li>
-<li>恢复备份速度比较慢</li>
-<li>每次的读取同步会带了性能压力</li>
-<li>存在个别bug，不能恢复</li>
+<li>相同的数据，aof会比rdb占用的内存大；</li>
+<li>aof的同步机制会不如rdb，aof每秒都做备份写数据，相对于rdb来说速度较慢。以fsync备份的话，可以提升速度，但也会影响cpu性能。</li>
 </ul>
 </li>
 </ul>
 <h3 id="rdb和aof选择问题">RDB和AOF选择问题</h3>
+<p>RDB适合大量数据的恢复，但数据的完整性和一致性可能会不足。RDB可能会丢失最后一次的备份，作为缓存来说，是可以忍受的。但是缓存的数据是要保证数据的完整性，需要使用AOF。</p>
 <ul>
-<li>官方推荐都开启</li>
-<li>如果对数据不敏感，可单独选择rdb</li>
-<li>不建议单独用aof（可能会有bug，不能恢复）</li>
+<li>如果可以接受一段时间的缓存丢失，可以使用RDB</li>
+<li>如果需要保证实时性的数据，使用AOF</li>
+<li>RDB和AOF可以一起使用，RDB做冷备，可在不同时期对不同版本做备份，AOF做热备，数据可以只有1秒的丢失。当AOF不可用的使用，可以再用RDB恢复。也就是Redis的恢复会先加载AOF，如果AOF有问题，会加载RDB。</li>
 <li>如果只做缓存，都不用</li>
 </ul>
 ]]></content>

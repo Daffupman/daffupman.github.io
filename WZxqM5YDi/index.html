@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL的索引及优化 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1605417297017">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1605440614101">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL的索引及优化 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1605417297017" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1605440614101" alt="">
   </a>
   <h1 class="site-title">
     
@@ -85,7 +85,7 @@
                 2020-11-07
               </span>
               <span>
-                17 min read
+                20 min read
               </span>
               
                 <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag">
@@ -362,7 +362,7 @@ MRR参数：<br>
 <li>禁止过大页码</li>
 </ol>
 <h4 id="count优化">COUNT优化</h4>
-<p>一些关于count的优化：</p>
+<p>一些关于count的结论：</p>
 <ol>
 <li>count(*)和count(1)是一样的；</li>
 <li>count(*)会选择最小的非主键索引，如果不存在任何非主键索引，则会使用主键；</li>
@@ -381,16 +381,78 @@ MRR参数：<br>
 <li>show table status where name = 'user'，估算值</li>
 <li>explain select * from salaries，估算值</li>
 </ul>
+<h4 id="order-by优化">ORDER BY优化</h4>
 <p>MySQL的排序模式</p>
 <ol>
-<li>rowid排序（常规排序）
-<ul>
+<li>
+<p>rowid排序（常规排序）</p>
+<ol>
+<li>过程
+<ol>
 <li>从表中获取满足where条件的记录；</li>
-<li>对于每条记录，将记录的主键即排序键（id、order_column）取出放入sort buffer（sort_buffer_size）；</li>
-<li>如果sort buffer能存放所有满足条件的id、order_column，则进行排序；否则sort buffer满后，排序并写到临时文件。快排算法。</li>
-</ul>
+<li>对于每条记录，将记录的主键即排序键（id、order_column）取出放入sort buffer（<code>sort_buffer_size</code>）；</li>
+<li>如果sort buffer能存放所有满足条件的id、order_column，则进行排序；否则sort buffer满后，排序并写到临时文件。快排算法；</li>
+<li>若排序中产生了临时文件，需要利用归并排序算法，从而保证记录有序；</li>
+<li>循环执行上述过程，知道所有满足条件的记录全部参与排序；</li>
+<li>扫描排好序的id、order_colum对，并利用id去取select需要返回的其他字段；</li>
+<li>返回结果集</li>
+</ol>
+</li>
+<li>特点
+<ol>
+<li>如果sort buffer不能存放结果集里面的所有id、order_column，会产生临时文件</li>
+<li>一次排序需要两次IO。
+<blockquote>
+<p>第二步：把id、order_column放入sort_buffer；第六步：通过id去获取需要返回的其他字段。由于返回结果是按照order_column排序的，所以id是乱序的，会存在随机io的问题。MySQL内部针对这种情况做了优化。在用id取数据之前，会按照id排序并放到一个缓存里面，这个缓存大小由<code>read_rnd_buffer_size</code> 控制，接着再去记录，从而把随机io转换成顺序io。</p>
+</blockquote>
 </li>
 </ol>
+</li>
+</ol>
+</li>
+<li>
+<p>全字段排序（优化排序）<br>
+直接取出SQL中需要的所有的字段，放到sort buffer中。由于sort buffer已经包含了查询需要的所有字段，因此在sort buffer中排序完成后可直接返回。<br>
+相对于rowid排序，全字段排序的优缺点有：</p>
+<ul>
+<li>性能提升，无需两次io；</li>
+<li>一行数据占用的空间回比rowid排序的要多，更容易导致临时文件。</li>
+</ul>
+</li>
+<li>
+<p>rowid和全字段是如何选择的？<br>
+当order by SQL中出现字段的总长度小于配置项 <code>max_length_for_sort_data</code> ，会使用全字段排序，否则使用rowid排序。</p>
+</li>
+<li>
+<p>打包字段排序<br>
+MySQL5.7引入，全字段模式的优化，工作原理一样，但是将字段紧密地排列在一起，而不是使用固定长度空间。</p>
+</li>
+</ol>
+<p>如何调优order by：</p>
+<ul>
+<li>利用索引，防止filesort发生</li>
+<li>如果发生filesort，并且没法避免，需要优化filesort
+<ul>
+<li>调大sort_buffer_size，减少/避免临时文件和归并操作
+<ul>
+<li>optimizer trace中 <code>num_initial_chunks_spilled_to_disk</code>的值</li>
+<li>sort_merge_passess变量的值</li>
+</ul>
+</li>
+<li>调大 <code>read_rnd_buffer_size</code>，让一次顺序io返回的结果更多</li>
+<li>设置合理的 <code>max_length_for_sort_data</code> 的值（一般不调整）</li>
+<li>调小 <code>max_sort_length</code>，即排序时最多取多少字节</li>
+</ul>
+</li>
+</ul>
+<h4 id="group-by优化">GROUP BY优化</h4>
+<p>MySQL有如下处理group by语句的方式，性能一次递减：</p>
+<ul>
+<li>松散索引扫描（Loose Index Scan）<br>
+无需扫描满足条件的所有索引键即可返回结果。在explain语句的extra中会显示 <code>using index for group by</code>。但是sql需要满足：查询是作用在单张表上的，GROUP BY指定的所有字段要符合最左前缀原则，而且没有其他字段。如果存在聚合函数，只支持min()/max()，并且如果同时使用了min()和max()，则必须作用于同一个字段。聚合函数作用的字段必须在索引中，并且紧跟GROUP BY所指定的字段。如果查询中存在除GROUP BY指定的列以外的其他部分，则必须以常量的形式出现。</li>
+<li>紧凑索引扫描（Tight Index Scan）</li>
+<li>临时表（Temporary table）</li>
+</ul>
 <h3 id="表设计的优化">表设计的优化</h3>
 <ol>
 <li>
@@ -463,6 +525,8 @@ interactive_timeout = 28800</p>
 <li><a href="#join%E8%AF%AD%E5%8F%A5%E7%9A%84%E4%BC%98%E5%8C%96">JOIN语句的优化</a></li>
 <li><a href="#%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96">分页查询优化</a></li>
 <li><a href="#count%E4%BC%98%E5%8C%96">COUNT优化</a></li>
+<li><a href="#order-by%E4%BC%98%E5%8C%96">ORDER BY优化</a></li>
+<li><a href="#group-by%E4%BC%98%E5%8C%96">GROUP BY优化</a></li>
 </ul>
 </li>
 <li><a href="#%E8%A1%A8%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%BC%98%E5%8C%96">表设计的优化</a></li>

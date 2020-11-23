@@ -2,21 +2,26 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MySQL8.0的新特性 | </title>
+<title>MySQL的主从复制 | </title>
 <link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1606145570847">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="MySQL8.0的新特性 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="MySQL的主从复制 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="MySQL8.0提供了一些实用的功能特性，这里会一一举例介绍。
-通用表达式（Common Table Expressions）
-CTE会生成临时表，但只会在查询期间有效，这个临时表在这个查询中可以多次引用和自引用。它的语法：
+    <meta name="description" content="主从复制原理
 
-这个特性会比..." />
-    <meta name="keywords" content="mysql" />
+搭建一主三从
+修改配置文件
+    vi /etc/my.cnf
+
+在主节点服务器的配置文件中的mysqld节点下增加配置
+
+log-bin=mysql-bin #表示启用二进制日志
+server-id=43 #表示serv..." />
+    <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
   </head>
@@ -82,77 +87,56 @@ CTE会生成临时表，但只会在查询期间有效，这个临时表在这�
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              MySQL8.0的新特性
+              MySQL的主从复制
             </h2>
             <div class="post-info">
               <span>
-                2020-11-07
+                2020-11-23
               </span>
               <span>
                 1 min read
               </span>
               
-                <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag">
-                  # mysql
-                </a>
-              
             </div>
             
-              <img class="post-feature-image" src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/mysql8.png" alt="">
+              <img class="post-feature-image" src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/mysql-master-slave-replication18-04.jpg" alt="">
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <p>MySQL8.0提供了一些实用的功能特性，这里会一一举例介绍。</p>
-<h2 id="通用表达式common-table-expressions">通用表达式（Common Table Expressions）</h2>
-<p>CTE会生成临时表，但只会在查询期间有效，这个临时表在这个查询中可以多次引用和自引用。它的语法：<br>
-<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201021222724.png" alt="" loading="lazy"><br>
-这个特性会比较适合写一些表中存在递归场景的查询，如：</p>
-<pre><code class="language-mysql">    # CTE递归生成序列
-    WITH RECURSIVE test(n) AS (
-        SELECT 1 AS n
-        UNION ALL
-        SELECT 1+n FROM test WHERE n &lt; 10
-    )
-    SELECT * FROM test
+                <h2 id="主从复制原理">主从复制原理</h2>
+<figure data-type="image" tabindex="1"><img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/v2-41b7ab2686ae604c42af50078ed07f6f_1440w.jpg" alt="主从复制原理" loading="lazy"></figure>
+<h2 id="搭建一主三从">搭建一主三从</h2>
+<h3 id="修改配置文件">修改配置文件</h3>
+<pre><code class="language-bash">    vi /etc/my.cnf
 </code></pre>
-<h2 id="窗口函数">窗口函数</h2>
-<p>提供了更方便的统计功能，语法如下：<br>
-<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201021224651.png" alt="" loading="lazy"><br>
-其中funcation_name可以是以下的函数：</p>
-<table>
-<thead>
-<tr>
-<th>函数名</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>聚合函数</td>
-<td>聚合函数都可以作为窗口函数使用</td>
-</tr>
-<tr>
-<td>ROW_NUMBER()</td>
-<td>返回窗口分区内数据的行号</td>
-</tr>
-<tr>
-<td>RANK()</td>
-<td>类似于row_number，只是对于相同数据会产生重复的行号，之后的数据行号会产生间隔</td>
-</tr>
-<tr>
-<td>DENSE_RANK()</td>
-<td>类似于rank，区别在于当组内某行数据重复时，虽然行号会重复，当后续的行号不会产生间隔</td>
-</tr>
-</tbody>
-</table>
+<p>在主节点服务器的配置文件中的mysqld节点下增加配置</p>
+<blockquote>
+<p>log-bin=mysql-bin #表示启用二进制日志<br>
+server-id=43 #表示server编号，编号要唯一</p>
+</blockquote>
+<p>在每个从节点服务器的配置文件中的mysqld节点下增加配置</p>
+<blockquote>
+<p>server-id=44</p>
+</blockquote>
+<h3 id="主节点创建复制日志用户">主节点创建复制日志用户</h3>
+<pre><code class="language-bash">    # 创建专用于写binlog的用户
+    create user 'write_bin_log'@'localhost' identified by 'writebinlog';
+    # 授权
+    grant replication slave on *.* to 'writebinlog'@'localhost';
+</code></pre>
 
               </div>
               <div class="toc-container">
                 <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#%E9%80%9A%E7%94%A8%E8%A1%A8%E8%BE%BE%E5%BC%8Fcommon-table-expressions">通用表达式（Common Table Expressions）</a></li>
-<li><a href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0">窗口函数</a></li>
+<li><a href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86">主从复制原理</a></li>
+<li><a href="#%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%BB%E4%B8%89%E4%BB%8E">搭建一主三从</a>
+<ul>
+<li><a href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">修改配置文件</a></li>
+<li><a href="#%E4%B8%BB%E8%8A%82%E7%82%B9%E5%88%9B%E5%BB%BA%E5%A4%8D%E5%88%B6%E6%97%A5%E5%BF%97%E7%94%A8%E6%88%B7">主节点创建复制日志用户</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -165,9 +149,9 @@ CTE会生成临时表，但只会在查询期间有效，这个临时表在这�
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://daffupman.github.io/mysql-shi-bei/">
+            <a href="https://daffupman.github.io/1d0KrCQDR/">
               <h3 class="post-title">
-                MySQL拾贝
+                Redis
               </h3>
             </a>
           </div>

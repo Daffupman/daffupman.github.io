@@ -2,13 +2,42 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-23T14:37:28.486Z</updated>
+    <updated>2020-11-23T15:33:06.365Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
     <logo>https://daffupman.github.io/images/avatar.png</logo>
     <icon>https://daffupman.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, </rights>
+    <entry>
+        <title type="html"><![CDATA[MySQL的主从复制]]></title>
+        <id>https://daffupman.github.io/YHepijchp/</id>
+        <link href="https://daffupman.github.io/YHepijchp/">
+        </link>
+        <updated>2020-11-23T14:56:10.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="主从复制原理">主从复制原理</h2>
+<figure data-type="image" tabindex="1"><img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/v2-41b7ab2686ae604c42af50078ed07f6f_1440w.jpg" alt="主从复制原理" loading="lazy"></figure>
+<h2 id="搭建一主三从">搭建一主三从</h2>
+<h3 id="修改配置文件">修改配置文件</h3>
+<pre><code class="language-bash">    vi /etc/my.cnf
+</code></pre>
+<p>在主节点服务器的配置文件中的mysqld节点下增加配置</p>
+<blockquote>
+<p>log-bin=mysql-bin #表示启用二进制日志<br>
+server-id=43 #表示server编号，编号要唯一</p>
+</blockquote>
+<p>在每个从节点服务器的配置文件中的mysqld节点下增加配置</p>
+<blockquote>
+<p>server-id=44</p>
+</blockquote>
+<h3 id="主节点创建复制日志用户">主节点创建复制日志用户</h3>
+<pre><code class="language-bash">    # 创建专用于写binlog的用户
+    create user 'write_bin_log'@'localhost' identified by 'writebinlog';
+    # 授权
+    grant replication slave on *.* to 'writebinlog'@'localhost';
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Redis]]></title>
         <id>https://daffupman.github.io/1d0KrCQDR/</id>
@@ -854,7 +883,7 @@ alter user 'root'@'localhost' identified by 'root';
 <pre><code class="language-bash"># 创建daff@localhost用户，密码是daff
 create user 'daff'@'localhost' identified by 'daff';
 # 给daff@localhost授予所有数据库的所有表的所有权限
-grant *all privileges on *.* to 'daff'@'localhost';
+grant all privileges on *.* to 'daff'@'localhost';
 # 刷新权限，使得用户的权限生效
 flush privileges；
 </code></pre>

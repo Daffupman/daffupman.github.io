@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-23T16:15:00.981Z</updated>
+    <updated>2020-11-23T16:19:32.199Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -884,13 +884,13 @@ pid-file=/usr/local/mysql-8.0.20/data/mysql.pid</p>
 </li>
 <li>
 <p>运行和修改MySQL<br>
-初始化mysql，注意这里会生成一个密码</p>
-<pre><code class="language-bash">/usr/local/mysql-8.0.20/bin/mysqld  --initialize --user=mysql --basedir=/usr/local/mysql-8.0.20 --datadir=/usr/local/mysql-8.0.20/data/
+初始化mysql</p>
+<pre><code class="language-bash">/usr/local/mysql-8.0.20/bin/mysqld  --initialize-insecure --user=mysql --basedir=/usr/local/mysql-8.0.20 --datadir=/usr/local/mysql-8.0.20/data/
 </code></pre>
 <p>拷贝启动文件</p>
 <pre><code class="language-bash">cp /usr/local/mysql-8.0.20/support-files/mysql.server /etc/init.d/mysqld
 </code></pre>
-<p>启动并连接mysql，这里输入的密码就是初始化时生成的密码</p>
+<p>启动并连接mysql</p>
 <pre><code class="language-bash">service mysqld start
 /usr/local/mysql-8.0.20/bin/mysql -uroot -p
 </code></pre>

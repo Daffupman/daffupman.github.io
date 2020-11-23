@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-23T14:35:47.624Z</updated>
+    <updated>2020-11-23T14:36:30.101Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -815,14 +815,14 @@ vi /etc/my.cnf
 <p>[client]<br>
 port=3306<br>
 socket=/usr/local/mysql-8.0.20/mysql.sock<br>
-default-character-set=utf8</p>
+default-character-set=utf8mb4</p>
 <p>[mysqld]<br>
 port=3306<br>
 user=mysql<br>
 socket=/usr/local/mysql-8.0.20/mysql.sock<br>
 basedir=/usr/local/mysql-8.0.20<br>
 datadir=/usr/local/mysql-8.0.20/data<br>
-character-set-server=utf8</p>
+character-set-server=utf8mb4</p>
 <p>[mysqld_safe]<br>
 log-error=/usr/local/mysql-8.0.20/data/mysql-error.log<br>
 pid-file=/usr/local/mysql-8.0.20/data/mysql.pid</p>

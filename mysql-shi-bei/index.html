@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL拾贝 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1606141978937">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1606142140281">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL拾贝 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1606141978937" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1606142140281" alt="">
   </a>
   <h1 class="site-title">
     
@@ -169,6 +169,9 @@ socket=/usr/local/mysql-8.0.20/mysql.sock<br>
 basedir=/usr/local/mysql-8.0.20<br>
 datadir=/usr/local/mysql-8.0.20/data<br>
 character-set-server=utf8</p>
+<p>[mysqld_safe]<br>
+log-error=/usr/local/mysql-8.0.20/data/mysql-error.log<br>
+pid-file=/usr/local/mysql-8.0.20/data/mysql.pid</p>
 </blockquote>
 <p>根据配置文件的 <code>datadir</code> 项，创建一个data目录</p>
 <pre><code class="language-bash">mkdir data

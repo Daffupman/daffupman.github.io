@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-23T15:46:43.254Z</updated>
+    <updated>2020-11-23T16:09:53.927Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -32,9 +32,9 @@ server-id=43 #表示server编号，编号要唯一</p>
 </blockquote>
 <h3 id="主节点创建复制日志用户">主节点创建复制日志用户</h3>
 <pre><code class="language-bash">    # 创建专用于写binlog的用户
-    create user 'write_bin_log'@'localhost' identified by 'writebinlog';
+    create user 'write_bin_log'@'%' identified by 'writebinlog';
     # 授权
-    grant replication slave on *.* to 'writebinlog'@'localhost';
+    grant replication slave on *.* to 'writebinlog'@'%';
     # 刷新权限
     flush privileges;
     # 查看主节点状态
@@ -43,7 +43,7 @@ server-id=43 #表示server编号，编号要唯一</p>
     reset master
 </code></pre>
 <h3 id="检查从节点状态">检查从节点状态</h3>
-<p>需要确保从节点执行命令 <code>show slave status</code> 时，显示的是：<code>Empty set</code>。如果不是的话，需要执行：</p>
+<p>需要确保从节点执行命令 <code>show slave status\G;</code> 时，显示的是：<code>Empty set</code>。如果不是的话，需要执行：</p>
 <pre><code class="language-bash">    stop slave; #停止复制，相当于终止从服务器上的IO和SQL线程
     reset slave;
 </code></pre>
@@ -53,6 +53,8 @@ server-id=43 #表示server编号，编号要唯一</p>
     # 开始执行
     start slave;
 </code></pre>
+<h3 id="检查测试">检查测试</h3>
+<p>在从节点上 <code>show slave status</code> 命令观察 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 两个参数是否都是Yes。在主节点上做的操作，都会在从节点上同步的。</p>
 ]]></content>
     </entry>
     <entry>

@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL的主从复制 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1606146400242">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1606147791947">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL的主从复制 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -30,7 +30,7 @@ server-id=43 #表示serv..." />
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1606146400242" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1606147791947" alt="">
   </a>
   <h1 class="site-title">
     
@@ -120,9 +120,9 @@ server-id=43 #表示server编号，编号要唯一</p>
 </blockquote>
 <h3 id="主节点创建复制日志用户">主节点创建复制日志用户</h3>
 <pre><code class="language-bash">    # 创建专用于写binlog的用户
-    create user 'write_bin_log'@'localhost' identified by 'writebinlog';
+    create user 'write_bin_log'@'%' identified by 'writebinlog';
     # 授权
-    grant replication slave on *.* to 'writebinlog'@'localhost';
+    grant replication slave on *.* to 'writebinlog'@'%';
     # 刷新权限
     flush privileges;
     # 查看主节点状态
@@ -131,7 +131,7 @@ server-id=43 #表示server编号，编号要唯一</p>
     reset master
 </code></pre>
 <h3 id="检查从节点状态">检查从节点状态</h3>
-<p>需要确保从节点执行命令 <code>show slave status</code> 时，显示的是：<code>Empty set</code>。如果不是的话，需要执行：</p>
+<p>需要确保从节点执行命令 <code>show slave status\G;</code> 时，显示的是：<code>Empty set</code>。如果不是的话，需要执行：</p>
 <pre><code class="language-bash">    stop slave; #停止复制，相当于终止从服务器上的IO和SQL线程
     reset slave;
 </code></pre>
@@ -141,6 +141,8 @@ server-id=43 #表示server编号，编号要唯一</p>
     # 开始执行
     start slave;
 </code></pre>
+<h3 id="检查测试">检查测试</h3>
+<p>在从节点上 <code>show slave status</code> 命令观察 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 两个参数是否都是Yes。在主节点上做的操作，都会在从节点上同步的。</p>
 
               </div>
               <div class="toc-container">
@@ -154,6 +156,7 @@ server-id=43 #表示server编号，编号要唯一</p>
 <li><a href="#%E4%B8%BB%E8%8A%82%E7%82%B9%E5%88%9B%E5%BB%BA%E5%A4%8D%E5%88%B6%E6%97%A5%E5%BF%97%E7%94%A8%E6%88%B7">主节点创建复制日志用户</a></li>
 <li><a href="#%E6%A3%80%E6%9F%A5%E4%BB%8E%E8%8A%82%E7%82%B9%E7%8A%B6%E6%80%81">检查从节点状态</a></li>
 <li><a href="#%E8%AE%BE%E7%BD%AE%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84master">设置从服务器的master</a></li>
+<li><a href="#%E6%A3%80%E6%9F%A5%E6%B5%8B%E8%AF%95">检查测试</a></li>
 </ul>
 </li>
 </ul>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-23T15:33:06.365Z</updated>
+    <updated>2020-11-23T15:33:42.537Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -885,7 +885,7 @@ create user 'daff'@'localhost' identified by 'daff';
 # 给daff@localhost授予所有数据库的所有表的所有权限
 grant all privileges on *.* to 'daff'@'localhost';
 # 刷新权限，使得用户的权限生效
-flush privileges；
+flush privileges;
 </code></pre>
 <p>修改root用户可远程连接，对于所有要远程连接的帐户，都需要这样设置</p>
 <pre><code class="language-bash"># 在所有的机器上都可以使用root身份连接过来

@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL的主从复制 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1606148369883">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1606232371754">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL的主从复制 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -30,7 +30,7 @@ server-id=43 #表示serv..." />
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1606148369883" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1606232371754" alt="">
   </a>
   <h1 class="site-title">
     
@@ -124,7 +124,7 @@ server-id=43 #表示server编号，编号要唯一</p>
 </blockquote>
 <h3 id="主节点创建复制日志用户">主节点创建复制日志用户</h3>
 <pre><code class="language-bash">    # 创建专用于写binlog的用户
-    create user 'write_bin_log'@'%' identified by 'writebinlog';
+    create user 'writebinlog'@'%' identified by 'writebinlog';
     # 授权
     grant replication slave on *.* to 'writebinlog'@'%';
     # 刷新权限
@@ -147,6 +147,25 @@ server-id=43 #表示server编号，编号要唯一</p>
 </code></pre>
 <h3 id="检查测试">检查测试</h3>
 <p>在从节点上 <code>show slave status</code> 命令观察 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 两个参数是否都是Yes。在主节点上做的操作，都会在从节点上同步的。</p>
+<h2 id="双主双从">双主双从</h2>
+<h3 id="修改主节点的配置文件">修改主节点的配置文件</h3>
+<h4 id="第一台主节点的mysqld下增加以下配置">第一台主节点的mysqld下增加以下配置</h4>
+<blockquote>
+<p>auto_increment_increment=2  # 步长<br>
+auto_increment_offset=1 # 开始的偏移量<br>
+log-slave-updates # binlog记录从另一个主节点同步过来的数据<br>
+sync_binlog=1 # 几次事务后执行同步</p>
+</blockquote>
+<h4 id="第一台主节点的mysqld下增加以下配置-2">第一台主节点的mysqld下增加以下配置</h4>
+<blockquote>
+<p>auto_increment_increment=2  # 步长<br>
+auto_increment_offset=1 # 开始的偏移量<br>
+log-slave-updates # binlog记录从另一个主节点同步过来的数据<br>
+sync_binlog=1 # 几次事务后执行同步</p>
+</blockquote>
+<h3 id="主节点上复制日志的用户">主节点上复制日志的用户</h3>
+<p>在两台主节点上创建writebinlog用户，步骤同上。（需要先停止之前的slave工作）。双主互为主从。</p>
+<h3 id="重启">重启</h3>
 
               </div>
               <div class="toc-container">
@@ -161,6 +180,18 @@ server-id=43 #表示server编号，编号要唯一</p>
 <li><a href="#%E6%A3%80%E6%9F%A5%E4%BB%8E%E8%8A%82%E7%82%B9%E7%8A%B6%E6%80%81">检查从节点状态</a></li>
 <li><a href="#%E8%AE%BE%E7%BD%AE%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84master">设置从服务器的master</a></li>
 <li><a href="#%E6%A3%80%E6%9F%A5%E6%B5%8B%E8%AF%95">检查测试</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%8C%E4%B8%BB%E5%8F%8C%E4%BB%8E">双主双从</a>
+<ul>
+<li><a href="#%E4%BF%AE%E6%94%B9%E4%B8%BB%E8%8A%82%E7%82%B9%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">修改主节点的配置文件</a>
+<ul>
+<li><a href="#%E7%AC%AC%E4%B8%80%E5%8F%B0%E4%B8%BB%E8%8A%82%E7%82%B9%E7%9A%84mysqld%E4%B8%8B%E5%A2%9E%E5%8A%A0%E4%BB%A5%E4%B8%8B%E9%85%8D%E7%BD%AE">第一台主节点的mysqld下增加以下配置</a></li>
+<li><a href="#%E7%AC%AC%E4%B8%80%E5%8F%B0%E4%B8%BB%E8%8A%82%E7%82%B9%E7%9A%84mysqld%E4%B8%8B%E5%A2%9E%E5%8A%A0%E4%BB%A5%E4%B8%8B%E9%85%8D%E7%BD%AE-2">第一台主节点的mysqld下增加以下配置</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%BB%E8%8A%82%E7%82%B9%E4%B8%8A%E5%A4%8D%E5%88%B6%E6%97%A5%E5%BF%97%E7%9A%84%E7%94%A8%E6%88%B7">主节点上复制日志的用户</a></li>
+<li><a href="#%E9%87%8D%E5%90%AF">重启</a></li>
 </ul>
 </li>
 </ul>

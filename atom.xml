@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2020-11-23T16:19:32.199Z</updated>
+    <updated>2020-11-24T15:39:34.329Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -32,7 +32,7 @@ server-id=43 #表示server编号，编号要唯一</p>
 </blockquote>
 <h3 id="主节点创建复制日志用户">主节点创建复制日志用户</h3>
 <pre><code class="language-bash">    # 创建专用于写binlog的用户
-    create user 'write_bin_log'@'%' identified by 'writebinlog';
+    create user 'writebinlog'@'%' identified by 'writebinlog';
     # 授权
     grant replication slave on *.* to 'writebinlog'@'%';
     # 刷新权限
@@ -55,6 +55,25 @@ server-id=43 #表示server编号，编号要唯一</p>
 </code></pre>
 <h3 id="检查测试">检查测试</h3>
 <p>在从节点上 <code>show slave status</code> 命令观察 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 两个参数是否都是Yes。在主节点上做的操作，都会在从节点上同步的。</p>
+<h2 id="双主双从">双主双从</h2>
+<h3 id="修改主节点的配置文件">修改主节点的配置文件</h3>
+<h4 id="第一台主节点的mysqld下增加以下配置">第一台主节点的mysqld下增加以下配置</h4>
+<blockquote>
+<p>auto_increment_increment=2  # 步长<br>
+auto_increment_offset=1 # 开始的偏移量<br>
+log-slave-updates # binlog记录从另一个主节点同步过来的数据<br>
+sync_binlog=1 # 几次事务后执行同步</p>
+</blockquote>
+<h4 id="第一台主节点的mysqld下增加以下配置-2">第一台主节点的mysqld下增加以下配置</h4>
+<blockquote>
+<p>auto_increment_increment=2  # 步长<br>
+auto_increment_offset=1 # 开始的偏移量<br>
+log-slave-updates # binlog记录从另一个主节点同步过来的数据<br>
+sync_binlog=1 # 几次事务后执行同步</p>
+</blockquote>
+<h3 id="主节点上复制日志的用户">主节点上复制日志的用户</h3>
+<p>在两台主节点上创建writebinlog用户，步骤同上。（需要先停止之前的slave工作）。双主互为主从。</p>
+<h3 id="重启">重启</h3>
 ]]></content>
     </entry>
     <entry>

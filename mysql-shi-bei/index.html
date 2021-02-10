@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySQL拾贝 | </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1612923070373">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1612923596498">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://daffupman.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySQL拾贝 |  - Atom Feed" href="https://daffupman.github.io/atom.xml">
@@ -21,7 +21,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://daffupman.github.io">
-  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1612923070373" alt="">
+  <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1612923596498" alt="">
   </a>
   <h1 class="site-title">
     
@@ -261,14 +261,6 @@ alter user 'root'@'%' identified with mysql_native_password by 'root';
 <li>支持BTree和自适应Hash索引；</li>
 <li>支持全文和空间索引（最好不用）。</li>
 </ul>
-<blockquote>
-<p>为什么用 B+ 树做索引而不用哈希表做索引?</p>
-<ol>
-<li>哈希表是把索引字段映射成对应的哈希码然后再存放在对应的位置，这样的话，如果我们要进行模糊查找的话，显然哈希表这种结构是不支持的，只能遍历这个表。而B+树则可以通过最左前缀原则快速找到对应的数据。</li>
-<li>如果我们要进行范围查找，例如查找ID为100 ~ 400的人，哈希表同样不支持，只能遍历全表。</li>
-<li>索引字段通过哈希映射成哈希码，如果很多字段都刚好映射到相同值的哈希码的话，那么形成的索引结构将会是一条很长的链表，这样的话，查找的时间就会大大增加。</li>
-</ol>
-</blockquote>
 <h2 id="mysql的数据类型">MySQL的数据类型</h2>
 <p>存储在MySQL中的数据主要又三种类型：数值类型、日期时间类型和字符串类型。<br>
 <img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20190513123402.png" alt="MySQL数据类型——数值类型" loading="lazy"><br>

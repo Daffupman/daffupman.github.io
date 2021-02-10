@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2021-02-10T02:19:58.631Z</updated>
+    <updated>2021-02-10T02:52:34.876Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -533,7 +533,13 @@ show profile for [all] query &lt;id&gt;;    # 查询指定id的sql执行详情
 </li>
 <li>自适应Hash索引：为优化查询性能自动建立的，不需要开发人员或DBA手动管理；Hash索引的性能会比B树好些，但是Hash索引不是按照索引值排序，所以不可使用排序。也不支持部分索引列匹配查询，只支持等值查询，不支持范围查询，模糊查询。Hash冲突越严重，性能下降越厉害。
 <blockquote>
-<p>innodb_adaptive_hash_index</p>
+<p>innodb_adaptive_hash_index<br>
+为什么用 B+ 树做索引而不用哈希表做索引?</p>
+<ol>
+<li>哈希表是把索引字段映射成对应的哈希码然后再存放在对应的位置，这样的话，如果我们要进行模糊查找的话，显然哈希表这种结构是不支持的，只能遍历这个表。而B+树则可以通过最左前缀原则快速找到对应的数据。</li>
+<li>如果我们要进行范围查找，例如查找ID为100 ~ 400的人，哈希表同样不支持，只能遍历全表</li>
+<li>索引字段通过哈希映射成哈希码，如果很多字段都刚好映射到相同值的哈希码的话，那么形成的索引结构将会是一条很长的链表，这样的话，查找的时间就会大大增加。</li>
+</ol>
 </blockquote>
 </li>
 <li>全文索引：使用elasticsearch或solr</li>

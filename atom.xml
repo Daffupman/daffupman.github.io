@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2021-02-10T02:58:05.392Z</updated>
+    <updated>2021-02-10T03:29:48.376Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -605,7 +605,16 @@ MRR参数：<br>
 - read_rnd_buffer_size：指定mrr缓存大小</p>
 </blockquote>
 </li>
-<li>Hash Join：mysql8.0.18，当限制会比较多，在mysql8.0.20限制会比较少，建议在8.0.20上使用。用来代替BNLJ。join buffer缓存外部循环hash表，内层循环遍历到hash表匹配。</li>
+<li>Hash Join：mysql8.0.18，当限制会比较多，在mysql8.0.20限制会比较少，建议在8.0.20上使用。用来代替BNLJ。为较小的表在内存中构建一个hash表，然后去扫描大表，扫描的过程中查询hash表是否满足条件。</li>
+</ul>
+<p>JOIN调优原则：</p>
+<ul>
+<li>小表驱动大表（优化器会自动执行，也可以使用 straight_join 指定驱动表）；</li>
+<li>如果where条件，应当要能够使用索引，并尽可能地减少外层循环的数据量；</li>
+<li>join的字段尽量创建索引；</li>
+<li>尽量减少扫描的行数（限制在百万内）；</li>
+<li>参与join的表不要太多（不超过3张）；</li>
+<li>如果被驱动表的join字段用不了索引，且内存较为充足，可以考虑join buffer设置的大一些。</li>
 </ul>
 <p>JOIN调优原则：</p>
 <ul>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2021-03-13T11:22:49.746Z</updated>
+    <updated>2021-03-13T11:26:04.978Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
@@ -49,7 +49,9 @@ server-id=43 #表示server编号，编号要唯一</p>
 </code></pre>
 <h3 id="设置从服务器的master">设置从服务器的master</h3>
 <pre><code class="language-bash">    # 在从节点上设置，指定主节点
-    change master to master_host='192.168.35.43',master_user='writebinlog',master_port=3306,master_password='writebinlog',master_log_file='mysql-bin.000001',master_log_pos=156;
+    change master to master_host='192.168.35.43',master_user='writebinlog',
+    master_port=3306,master_password='writebinlog'
+    master_log_file='mysql-bin.000001',master_log_pos=156;
     # 开始执行
     start slave;
 </code></pre>

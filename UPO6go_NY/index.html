@@ -7,7 +7,7 @@
 <title>
     mysql | 
 </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615634565152">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615634754784">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
@@ -27,7 +27,7 @@
     <div class="nav">
         <div class="logo">
             <a href="https://daffupman.github.io">
-                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615634565152" alt="">
+                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615634754784" alt="">
             </a>
             <div class="site-title">
                 <h1>
@@ -112,7 +112,7 @@
                     <time class="post-time">2020-11-23</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-info">
+                            i-tag-error">
             #mysql
         </a>
                         
@@ -159,7 +159,9 @@ server-id=44
 
 设置从服务器的master
     # 在从节点上设置，指定主节点
-    change master to master_host=&#39;192.168.35.43&#39;,master_user=&#39;writebinlog&#39;,master_port=3306,master_password=&#39;writebinlog&#39;,master_log_file=&#39;mysql-bin.000001&#39;,master_log_pos=156;
+    change master to master_host=&#39;192.168.35.43&#39;,master_user=&#39;writebinlog&#39;,
+    master_port=3306,master_password=&#39;writebinlog&#39;
+    master_log_file=&#39;mysql-bin.000001&#39;,master_log_pos=156;
     # 开始执行
     start slave;
 
@@ -205,7 +207,7 @@ sync_binlog=1 # 几次事务后执行同步
                     <time class="post-time">2020-11-07</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-error">
+                            i-tag-success">
             #mysql
         </a>
                         
@@ -735,7 +737,7 @@ DENSE_RANK()
                     <time class="post-time">2020-11-06</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-primary">
+                            i-tag-other_4">
             #mysql
         </a>
                         
@@ -1203,7 +1205,7 @@ InnoDB中的锁
                     <!-- 个人信息 -->
                     
     <div class="id_card i-card">
-        <div class="id_card-avatar" style="background-image: url(https://daffupman.github.io/images/avatar.png?v=1615634565152)">
+        <div class="id_card-avatar" style="background-image: url(https://daffupman.github.io/images/avatar.png?v=1615634754784)">
         </div>
         <h1 class="id_card-title">
             

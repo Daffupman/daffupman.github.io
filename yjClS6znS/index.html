@@ -7,7 +7,7 @@
 <title>
     入坑Nginx | 
 </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615686313127">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615704376352">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
@@ -35,7 +35,7 @@
     <div class="nav">
         <div class="logo">
             <a href="https://daffupman.github.io">
-                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615686313127" alt="">
+                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615704376352" alt="">
             </a>
             <div class="site-title">
                 <h1>
@@ -112,7 +112,7 @@
                             <time class="post-time">2021-03-13</time>
                             
                                 <a href="https://daffupman.github.io/GtUvQZM-R/" class="post-tag i-tag
-                            i-tag-other_2">
+                            i-tag-error">
                             #nginx
                         </a>
                                 
@@ -152,7 +152,7 @@ mkdir /var/temp/nginx /var/run/nginx /var/log/nginx -p # 编译前，先创建ng
 --http-fastcgi-temp-path=/var/temp/nginx/fastcgi \
 --http-uwsgi-temp-path=/var/temp/nginx/uwsgi \
 --http-scgi-temp-path=/var/temp/nginx/scgi \
---add-module=/rt/fastdfs-nginx-module-1.22/src/ # 配置命令
+--add-module=/usr/local/fastdfs-nginx-module-1.22/src # 配置命令
 make &amp; make install # 编译和安装
 ./nginx # 启动nginx
 </code></pre>

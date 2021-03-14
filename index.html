@@ -7,7 +7,7 @@
 <title>
     
 </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615686313127">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615704376352">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
@@ -27,7 +27,7 @@
     <div class="nav">
         <div class="logo">
             <a href="https://daffupman.github.io">
-                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615686313127" alt="">
+                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615704376352" alt="">
             </a>
             <div class="site-title">
                 <h1>
@@ -99,6 +99,123 @@
         
             <article class="post i-card">
                 <h2 class="post-title">
+                    <a href="https://daffupman.github.io/ceDfb9-tr/">
+                        分布式文件系统FastDFS
+                    </a>
+                </h2>
+                <div class="post-info">
+                    <time class="post-time">2021-03-14</time>
+                    
+                </div>
+                <div class="post-article">
+                    
+                            <div class="post-content">
+                                
+                                        <div class="post-content-content">
+                                            什么是FastDFS
+FastDFS是一个开源的轻量级分布式文件系统，它可以管理文件，功能包括：文件存储、文件同步和文件访问，解决了大容量存储和负载均衡的问题。
+FastDFS服务端的两个角色：跟踪器（tracker）和存储节点（storage）。两者可以由一台或多台服务器构成。为了支持大容量，存储节点采用分卷的组织方式。存储系统由一个或多个卷组成，卷和卷之间的文件是相互独立的。当存储空间不足时，可以动态增加卷来扩大存储系统的容量。FastDFS中的文件标识分为两个部分：卷名和文件名。
+常见术语：
+
+tracker：追踪服务，用于协调和负载均衡，同时监控storage的状态；
+storage：存储服务器，保存文件和文件的元数据；
+group：组，同组节点提供冗余备份，不同组用于扩容；
+meta data：文件的元数据。
+
+FastDFS的架构
+
+客户端会向tracker发起请求上传，tracker会在storage中选择一个位置。tracker返回这个位置给客户端，客户端再向storage发起文件上传。storage存储完成后返回文件存储的相关信息。
+
+安装
+
+
+软件准备
+
+libfatscommon
+FastDFS
+fastdfs-nginx-module
+nginx
+
+
+
+安装依赖
+yum -y install zlib zlib-devel pcre pcre-devel gcc gcc-c++ openssl openssl-devel libevent libevent-devel perl unzip wget
+
+
+
+安装libfastcommon
+tar -zxvf libfastcommon-1.0.42.tar.gz -C /usr/local
+cd /usr/local/libfastcommon-1.0.42/
+./make.sh &amp;amp;&amp;amp; ./make.sh install
+
+
+
+安装fastdfs程序
+tar -zxvf fastdfs-6.04.tar.gz -C /usr/local
+cd /usr/local/fastdfs-6.04/
+vi make.sh # 修改make文件
+TARGET_PREFIX=$DESTDIR/usr
+TARGET_CONF_PATH=$DESTDIR/etc/fdfs
+TARGET_INIT_PATH=$DESTDIR/etc/init.d
+./make.sh &amp;amp;&amp;amp; ./make.sh install
+cp /usr/local/fastdfs-6.04/conf/* /etc/fdfs/
+
+
+
+配置fastdfs
+# 配置tracker
+vi tracker.conf
+
+# 修改如下内容
+base_path=/usr/local/fastdfs-6.04/tracker
+
+# 配置storage
+vi storage.conf
+
+# 修改内容如下
+# 修改组名 
+group_name=daff
+# 修改storage的工作空间 
+base_path=/usr/local/fastdfs-6.04/storage 
+# 修改storage的存储空间 
+store_path0=/usr/local/fastdfs-6.04/storage 
+# 修改tracker的地址和端口号，用于心跳 
+tracker_server=192.168.65.70:22122 
+# 后续结合nginx的一个对外服务端口号 
+http.server_port=8888
+
+
+
+创建目录
+mkdir /usr/local/fastdfs-6.04/tracker -p
+mkdir /usr/local/fastdfs-6.04/storage -p
+
+
+
+启动tracker、storage
+/usr/bin/fdfs_trackerd /usr/local/fastdfs-6.04/conf/tracker.conf
+/usr/bin/fdfs_storaged /usr/local/fastdfs-6.04/conf/storage.conf
+ps -ef|grep tracker
+/usr/bin/stop.sh /etc/fdfs/tracker.conf
+
+
+
+fastdfs的nginx模块
+tar -zxvf fastdfs-nginx-module-1.22.tar.gz
+cp mod_fastdfs.conf /etc/fdfs
+
+
+
+
+                                        </div>
+                                        
+                                            <a class="btn btn-text" href="https://daffupman.github.io/ceDfb9-tr/">Read More ~</a>
+                            </div>
+                </div>
+            </article>
+            
+            <article class="post i-card">
+                <h2 class="post-title">
                     <a href="https://daffupman.github.io/br1NMVbE5/">
                         Git操作指南
                     </a>
@@ -107,7 +224,7 @@
                     <time class="post-time">2021-03-14</time>
                     
                         <a href="https://daffupman.github.io/SfRQdaNBV/" class="post-tag i-tag
-                            i-tag-other_4">
+                            i-tag-banana">
             #git
         </a>
                         
@@ -276,7 +393,7 @@ ssh授权
                     <time class="post-time">2021-03-13</time>
                     
                         <a href="https://daffupman.github.io/GtUvQZM-R/" class="post-tag i-tag
-                            i-tag-other_1">
+                            i-tag-banana">
             #nginx
         </a>
                         
@@ -320,7 +437,7 @@ mkdir /var/temp/nginx /var/run/nginx /var/log/nginx -p # 编译前，先创建ng
 --http-fastcgi-temp-path=/var/temp/nginx/fastcgi \
 --http-uwsgi-temp-path=/var/temp/nginx/uwsgi \
 --http-scgi-temp-path=/var/temp/nginx/scgi \
---add-module=/rt/fastdfs-nginx-module-1.22/src/ # 配置命令
+--add-module=/usr/local/fastdfs-nginx-module-1.22/src # 配置命令
 make &amp;amp; make install # 编译和安装
 ./nginx # 启动nginx
 
@@ -735,7 +852,7 @@ sync_binlog=1 # 几次事务后执行同步
                     <time class="post-time">2020-11-10</time>
                     
                         <a href="https://daffupman.github.io/odW_eMmv5/" class="post-tag i-tag
-                            i-tag-primary">
+                            i-tag-">
             #redis
         </a>
                         
@@ -1023,7 +1140,7 @@ RDB和AOF可以一起使用，RDB做冷备，可在不同时期对不同版本�
                     <time class="post-time">2020-11-07</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-other_2">
+                            i-tag-warning">
             #mysql
         </a>
                         
@@ -1511,7 +1628,7 @@ idle-timeout：一个链接idle状态的最大时长，超时则被释放。
                     <time class="post-time">2020-11-07</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-error">
+                            i-tag-info">
             #mysql
         </a>
                         
@@ -1585,7 +1702,7 @@ DENSE_RANK()
                     <time class="post-time">2020-11-06</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-other_1">
+                            i-tag-error">
             #mysql
         </a>
                         
@@ -2053,7 +2170,7 @@ InnoDB中的锁
                     <!-- 个人信息 -->
                     
     <div class="id_card i-card">
-        <div class="id_card-avatar" style="background-image: url(https://daffupman.github.io/images/avatar.png?v=1615686313127)">
+        <div class="id_card-avatar" style="background-image: url(https://daffupman.github.io/images/avatar.png?v=1615704376352)">
         </div>
         <h1 class="id_card-title">
             

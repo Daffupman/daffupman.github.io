@@ -2,13 +2,115 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2021-03-14T01:46:52.023Z</updated>
+    <updated>2021-03-14T06:46:22.248Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
     <logo>https://daffupman.github.io/images/avatar.png</logo>
     <icon>https://daffupman.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, </rights>
+    <entry>
+        <title type="html"><![CDATA[分布式文件系统FastDFS]]></title>
+        <id>https://daffupman.github.io/ceDfb9-tr/</id>
+        <link href="https://daffupman.github.io/ceDfb9-tr/">
+        </link>
+        <updated>2021-03-14T04:10:17.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="什么是fastdfs">什么是FastDFS</h2>
+<p>FastDFS是一个开源的轻量级分布式文件系统，它可以管理文件，功能包括：文件存储、文件同步和文件访问，解决了大容量存储和负载均衡的问题。</p>
+<p>FastDFS服务端的两个角色：跟踪器（tracker）和存储节点（storage）。两者可以由一台或多台服务器构成。为了支持大容量，存储节点采用分卷的组织方式。存储系统由一个或多个卷组成，卷和卷之间的文件是相互独立的。当存储空间不足时，可以动态增加卷来扩大存储系统的容量。FastDFS中的文件标识分为两个部分：卷名和文件名。</p>
+<p>常见术语：</p>
+<ul>
+<li>tracker：追踪服务，用于协调和负载均衡，同时监控storage的状态；</li>
+<li>storage：存储服务器，保存文件和文件的元数据；</li>
+<li>group：组，同组节点提供冗余备份，不同组用于扩容；</li>
+<li>meta data：文件的元数据。</li>
+</ul>
+<h2 id="fastdfs的架构">FastDFS的架构</h2>
+<figure data-type="image" tabindex="1"><img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20210314122731.png" alt="FastDFS架构" loading="lazy"></figure>
+<p>客户端会向tracker发起请求上传，tracker会在storage中选择一个位置。tracker返回这个位置给客户端，客户端再向storage发起文件上传。storage存储完成后返回文件存储的相关信息。<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20210314123140.png" alt="文件上传" loading="lazy"></p>
+<h2 id="安装">安装</h2>
+<ol>
+<li>
+<p>软件准备</p>
+<ul>
+<li>libfatscommon</li>
+<li>FastDFS</li>
+<li>fastdfs-nginx-module</li>
+<li>nginx</li>
+</ul>
+</li>
+<li>
+<p>安装依赖</p>
+<pre><code class="language-shell">yum -y install zlib zlib-devel pcre pcre-devel gcc gcc-c++ openssl openssl-devel libevent libevent-devel perl unzip wget
+</code></pre>
+</li>
+<li>
+<p>安装libfastcommon</p>
+<pre><code class="language-shell">tar -zxvf libfastcommon-1.0.42.tar.gz -C /usr/local
+cd /usr/local/libfastcommon-1.0.42/
+./make.sh &amp;&amp; ./make.sh install
+</code></pre>
+</li>
+<li>
+<p>安装fastdfs程序</p>
+<pre><code class="language-shell">tar -zxvf fastdfs-6.04.tar.gz -C /usr/local
+cd /usr/local/fastdfs-6.04/
+vi make.sh # 修改make文件
+TARGET_PREFIX=$DESTDIR/usr
+TARGET_CONF_PATH=$DESTDIR/etc/fdfs
+TARGET_INIT_PATH=$DESTDIR/etc/init.d
+./make.sh &amp;&amp; ./make.sh install
+cp /usr/local/fastdfs-6.04/conf/* /etc/fdfs/
+</code></pre>
+</li>
+<li>
+<p>配置fastdfs</p>
+<pre><code class="language-shell"># 配置tracker
+vi tracker.conf
+
+# 修改如下内容
+base_path=/usr/local/fastdfs-6.04/tracker
+
+# 配置storage
+vi storage.conf
+
+# 修改内容如下
+# 修改组名 
+group_name=daff
+# 修改storage的工作空间 
+base_path=/usr/local/fastdfs-6.04/storage 
+# 修改storage的存储空间 
+store_path0=/usr/local/fastdfs-6.04/storage 
+# 修改tracker的地址和端口号，用于心跳 
+tracker_server=192.168.65.70:22122 
+# 后续结合nginx的一个对外服务端口号 
+http.server_port=8888
+</code></pre>
+</li>
+<li>
+<p>创建目录</p>
+<pre><code class="language-shell">mkdir /usr/local/fastdfs-6.04/tracker -p
+mkdir /usr/local/fastdfs-6.04/storage -p
+</code></pre>
+</li>
+<li>
+<p>启动tracker、storage</p>
+<pre><code class="language-shell">/usr/bin/fdfs_trackerd /usr/local/fastdfs-6.04/conf/tracker.conf
+/usr/bin/fdfs_storaged /usr/local/fastdfs-6.04/conf/storage.conf
+ps -ef|grep tracker
+/usr/bin/stop.sh /etc/fdfs/tracker.conf
+</code></pre>
+</li>
+<li>
+<p>fastdfs的nginx模块</p>
+<pre><code class="language-shell">tar -zxvf fastdfs-nginx-module-1.22.tar.gz
+cp mod_fastdfs.conf /etc/fdfs
+</code></pre>
+</li>
+</ol>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Git操作指南]]></title>
         <id>https://daffupman.github.io/br1NMVbE5/</id>
@@ -192,7 +294,7 @@ mkdir /var/temp/nginx /var/run/nginx /var/log/nginx -p # 编译前，先创建ng
 --http-fastcgi-temp-path=/var/temp/nginx/fastcgi \
 --http-uwsgi-temp-path=/var/temp/nginx/uwsgi \
 --http-scgi-temp-path=/var/temp/nginx/scgi \
---add-module=/rt/fastdfs-nginx-module-1.22/src/ # 配置命令
+--add-module=/usr/local/fastdfs-nginx-module-1.22/src # 配置命令
 make &amp; make install # 编译和安装
 ./nginx # 启动nginx
 </code></pre>

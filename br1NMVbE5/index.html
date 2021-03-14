@@ -5,7 +5,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>
-    MySQL8.0的新特性 | 
+    Git操作指南 | 
 </title>
 <link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615686313127">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
@@ -106,64 +106,159 @@
                 <div id="content" class="main-container-left">
                     <article class="post i-card">
                         <h2 class="post-title">
-                            MySQL8.0的新特性
+                            Git操作指南
                         </h2>
                         <div class="post-info">
-                            <time class="post-time">2020-11-07</time>
+                            <time class="post-time">2021-03-14</time>
                             
-                                <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-other_4">
-                            #mysql
+                                <a href="https://daffupman.github.io/SfRQdaNBV/" class="post-tag i-tag
+                            i-tag-info">
+                            #git
                         </a>
                                 
                         </div>
                         
-                            <div class="post-feature-image" style="background-image: url('https://for-markdown.oss-cn-shanghai.aliyuncs.com/mysql8.png')"></div>
+                            <div class="post-feature-image" style="background-image: url('https://for-markdown.oss-cn-shanghai.aliyuncs.com/git_cover.jfif')"></div>
                             
                                 <div class="post-content">
-                                    <p>MySQL8.0提供了一些实用的功能特性，这里会一一举例介绍。</p>
-<h2 id="通用表达式common-table-expressions">通用表达式（Common Table Expressions）</h2>
-<p>CTE会生成临时表，但只会在查询期间有效，这个临时表在这个查询中可以多次引用和自引用。它的语法：<br>
-<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201021222724.png" alt="" loading="lazy"><br>
-这个特性会比较适合写一些表中存在递归场景的查询，如：</p>
-<pre><code class="language-mysql">    # CTE递归生成序列
-    WITH RECURSIVE test(n) AS (
-        SELECT 1 AS n
-        UNION ALL
-        SELECT 1+n FROM test WHERE n &lt; 10
-    )
-    SELECT * FROM test
+                                    <h2 id="快速上手">快速上手</h2>
+<ol>
+<li>git下载地址：https://git-scm.com/</li>
+<li>配置用户信息<pre><code class="language-shell">git config --global user.name = &lt;username&gt;   # 配置用户名，加&quot;&quot;
+git config --global user.email = &lt;useremail&gt;    # 配置邮箱，加&quot;&quot;
+git config --list # 查询配置信息
 </code></pre>
-<h2 id="窗口函数">窗口函数</h2>
-<p>提供了更方便的统计功能，语法如下：<br>
-<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/20201021224651.png" alt="" loading="lazy"><br>
-其中funcation_name可以是以下的函数：</p>
-<table>
-<thead>
-<tr>
-<th>函数名</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>聚合函数</td>
-<td>聚合函数都可以作为窗口函数使用</td>
-</tr>
-<tr>
-<td>ROW_NUMBER()</td>
-<td>返回窗口分区内数据的行号</td>
-</tr>
-<tr>
-<td>RANK()</td>
-<td>类似于row_number，只是对于相同数据会产生重复的行号，之后的数据行号会产生间隔</td>
-</tr>
-<tr>
-<td>DENSE_RANK()</td>
-<td>类似于rank，区别在于当组内某行数据重复时，虽然行号会重复，当后续的行号不会产生间隔</td>
-</tr>
-</tbody>
-</table>
+</li>
+<li>创建目录并初始化仓库，会生成一个<code>.git</code>的隐藏文件夹<pre><code class="language-shell">git init &lt;dirName&gt;
+</code></pre>
+</li>
+<li>关联远程仓库<pre><code class="language-shell">git remote add &lt;name&gt; &lt;url&gt;		# 添加远程仓库
+git remote						#列出所有远程仓库
+</code></pre>
+</li>
+<li>复制远程仓库中的项目<pre><code class="language-shell">git clone &lt;url&gt;
+</code></pre>
+</li>
+<li>文件提交<pre><code class="language-shell">git add &lt;file&gt;						#把文件从workspace添加进index中
+git commit &lt;file&gt; -m &lt;comment&gt;		#把文件从index添加进repostory中
+</code></pre>
+</li>
+<li>从远程仓库更新项目<pre><code class="language-shell">git pull &lt;name&gt; master
+</code></pre>
+</li>
+<li>提交到远程仓库<pre><code class="language-shell">git push &lt;name&gt; master
+</code></pre>
+</li>
+</ol>
+<h2 id="git原理">Git原理</h2>
+<h3 id="git工作空间">Git工作空间</h3>
+<figure data-type="image" tabindex="1"><img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/1548725462646.png" alt="" loading="lazy"></figure>
+<h3 id="git常用命令">Git常用命令</h3>
+<ul>
+<li>
+<p>查看当前状态</p>
+<pre><code class="language-shell">git status
+</code></pre>
+</li>
+<li>
+<p>把指定文件恢复到暂存区</p>
+<pre><code class="language-shell">git reset HEAD &lt;file&gt;
+</code></pre>
+</li>
+<li>
+<p>把暂存区的文件恢复并覆盖到工作区</p>
+<pre><code class="language-shell">git checkout -- &lt;file&gt;
+</code></pre>
+</li>
+<li>
+<p>查看提交历史</p>
+<pre><code class="language-shell">git log
+</code></pre>
+</li>
+<li>
+<p>文件在各个空间的切换<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/1543225543060.png" alt="" loading="lazy"><br>
+HEAD指针指向仓库中的当前版本：<code>HEAD~n</code>,表示前第n个版本；<br>
+移动HEAD指向，指向上一个快照；再将指针指向的快照回滚带暂存区（默认情况）</p>
+<pre><code class="language-shell">git reset --mixed HEAD~
+</code></pre>
+<p>移动HEAD指针的指向，指向上一个快照</p>
+<pre><code class="language-shell">git reset --soft HEAD~
+</code></pre>
+<p>移动HEAD指针的指向，指向上一个快照；将指向的快照回滚到暂存区；将暂存区的文件还原到工作区</p>
+<pre><code class="language-shell">git reset --hard HEAD~
+</code></pre>
+</li>
+<li>
+<p>版本回滚<br>
+回滚到指定快照</p>
+<pre><code class="language-shell">git log			#查看快照id（一串哈希值）
+git reset [id]	#回到该id快照
+</code></pre>
+</li>
+<li>
+<p>版本比较</p>
+<ul>
+<li>比较工作空间和暂存目录<pre><code class="language-shell">git diff
+</code></pre>
+</li>
+<li>比较两个历史快照<pre><code class="language-shell">git diff 快照id1 快照id2
+</code></pre>
+</li>
+<li>比较当前工作去和仓库中的快照<pre><code class="language-shell">git diff 快照id
+</code></pre>
+</li>
+<li>比较暂存区和仓库的快照(不加快照id默认是HEAD指向的版本)<pre><code class="language-shell">git diff --cached 快照ud
+</code></pre>
+</li>
+<li>奥义图<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/1543226372637.png" alt="" loading="lazy"></li>
+</ul>
+</li>
+<li>
+<p>其他</p>
+<ul>
+<li>更正最新一次的提交备注<pre><code class="language-shell">git commit --amend -m &quot;description&quot;
+</code></pre>
+</li>
+<li>删除文件（除了删除工作区域和暂存区域的该文件外，还需要修改仓库HEAD指向，将其指向上一个版本，上个版本是不包含该文件的）<pre><code class="language-shell">git rm &lt;file&gt;
+git reset --soft HEAD~
+</code></pre>
+</li>
+<li>删除暂存区域的文件， 不会删除工作目录的文件<pre><code class="language-shell">git rm --cached &lt;file&gt;
+</code></pre>
+</li>
+<li>重命名文件<pre><code class="language-shell">git mv &lt;oldname&gt; &lt;newname&gt;
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="git分支">Git分支</h2>
+<ul>
+<li>创建新分支<pre><code class="language-shell">git branch &lt;branchname&gt;
+</code></pre>
+</li>
+<li>--decorate:下那是tag信息； --oneline:精简显示每个快照； --graph:图形化显示<pre><code class="language-shell">git log --decorate --oneline --graph -all
+</code></pre>
+</li>
+<li>切换分支，此时HEAD指针会指向切换的分支上<pre><code class="language-shell">git checkout &lt;brachname&gt;
+git checkout -b &lt;branchname&gt;		#创建分支，并切换到新分支中
+</code></pre>
+</li>
+<li>合并分支<pre><code class="language-shell">git merge &lt;branchname&gt;
+</code></pre>
+</li>
+<li>删除分支<pre><code class="language-shell">git branch -d &lt;branchname&gt;
+</code></pre>
+</li>
+</ul>
+<h2 id="ssh授权">ssh授权</h2>
+<ol>
+<li>授权命令，以生成公钥和私钥： <code>ssh-keygen -t rsa</code></li>
+<li>在github上的settings-&gt;SSH and GPG keys中添加公钥</li>
+<li>验证是否授权成功：<code>ssh -T git@github.com</code></li>
+</ol>
 
                                 </div>
                     </article>
@@ -171,9 +266,9 @@
                     
                         <div class="next-post">
                             <div class="next">下一篇</div>
-                            <a href="https://daffupman.github.io/mysql-shi-bei/">
+                            <a href="https://daffupman.github.io/yjClS6znS/">
                                 <h3 class="post-title">
-                                    MySQL拾贝
+                                    入坑Nginx
                                 </h3>
                             </a>
                         </div>
@@ -194,8 +289,15 @@
             <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#%E9%80%9A%E7%94%A8%E8%A1%A8%E8%BE%BE%E5%BC%8Fcommon-table-expressions">通用表达式（Common Table Expressions）</a></li>
-<li><a href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0">窗口函数</a></li>
+<li><a href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B">快速上手</a></li>
+<li><a href="#git%E5%8E%9F%E7%90%86">Git原理</a>
+<ul>
+<li><a href="#git%E5%B7%A5%E4%BD%9C%E7%A9%BA%E9%97%B4">Git工作空间</a></li>
+<li><a href="#git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4">Git常用命令</a></li>
+</ul>
+</li>
+<li><a href="#git%E5%88%86%E6%94%AF">Git分支</a></li>
+<li><a href="#ssh%E6%8E%88%E6%9D%83">ssh授权</a></li>
 </ul>
 </li>
 </ul>

@@ -2,13 +2,159 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://daffupman.github.io</id>
     <title></title>
-    <updated>2021-03-13T14:23:52.617Z</updated>
+    <updated>2021-03-14T01:46:52.023Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://daffupman.github.io"/>
     <link rel="self" href="https://daffupman.github.io/atom.xml"/>
     <logo>https://daffupman.github.io/images/avatar.png</logo>
     <icon>https://daffupman.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, </rights>
+    <entry>
+        <title type="html"><![CDATA[Git操作指南]]></title>
+        <id>https://daffupman.github.io/br1NMVbE5/</id>
+        <link href="https://daffupman.github.io/br1NMVbE5/">
+        </link>
+        <updated>2021-03-14T01:03:45.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="快速上手">快速上手</h2>
+<ol>
+<li>git下载地址：https://git-scm.com/</li>
+<li>配置用户信息<pre><code class="language-shell">git config --global user.name = &lt;username&gt;   # 配置用户名，加&quot;&quot;
+git config --global user.email = &lt;useremail&gt;    # 配置邮箱，加&quot;&quot;
+git config --list # 查询配置信息
+</code></pre>
+</li>
+<li>创建目录并初始化仓库，会生成一个<code>.git</code>的隐藏文件夹<pre><code class="language-shell">git init &lt;dirName&gt;
+</code></pre>
+</li>
+<li>关联远程仓库<pre><code class="language-shell">git remote add &lt;name&gt; &lt;url&gt;		# 添加远程仓库
+git remote						#列出所有远程仓库
+</code></pre>
+</li>
+<li>复制远程仓库中的项目<pre><code class="language-shell">git clone &lt;url&gt;
+</code></pre>
+</li>
+<li>文件提交<pre><code class="language-shell">git add &lt;file&gt;						#把文件从workspace添加进index中
+git commit &lt;file&gt; -m &lt;comment&gt;		#把文件从index添加进repostory中
+</code></pre>
+</li>
+<li>从远程仓库更新项目<pre><code class="language-shell">git pull &lt;name&gt; master
+</code></pre>
+</li>
+<li>提交到远程仓库<pre><code class="language-shell">git push &lt;name&gt; master
+</code></pre>
+</li>
+</ol>
+<h2 id="git原理">Git原理</h2>
+<h3 id="git工作空间">Git工作空间</h3>
+<figure data-type="image" tabindex="1"><img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/1548725462646.png" alt="" loading="lazy"></figure>
+<h3 id="git常用命令">Git常用命令</h3>
+<ul>
+<li>
+<p>查看当前状态</p>
+<pre><code class="language-shell">git status
+</code></pre>
+</li>
+<li>
+<p>把指定文件恢复到暂存区</p>
+<pre><code class="language-shell">git reset HEAD &lt;file&gt;
+</code></pre>
+</li>
+<li>
+<p>把暂存区的文件恢复并覆盖到工作区</p>
+<pre><code class="language-shell">git checkout -- &lt;file&gt;
+</code></pre>
+</li>
+<li>
+<p>查看提交历史</p>
+<pre><code class="language-shell">git log
+</code></pre>
+</li>
+<li>
+<p>文件在各个空间的切换<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/1543225543060.png" alt="" loading="lazy"><br>
+HEAD指针指向仓库中的当前版本：<code>HEAD~n</code>,表示前第n个版本；<br>
+移动HEAD指向，指向上一个快照；再将指针指向的快照回滚带暂存区（默认情况）</p>
+<pre><code class="language-shell">git reset --mixed HEAD~
+</code></pre>
+<p>移动HEAD指针的指向，指向上一个快照</p>
+<pre><code class="language-shell">git reset --soft HEAD~
+</code></pre>
+<p>移动HEAD指针的指向，指向上一个快照；将指向的快照回滚到暂存区；将暂存区的文件还原到工作区</p>
+<pre><code class="language-shell">git reset --hard HEAD~
+</code></pre>
+</li>
+<li>
+<p>版本回滚<br>
+回滚到指定快照</p>
+<pre><code class="language-shell">git log			#查看快照id（一串哈希值）
+git reset [id]	#回到该id快照
+</code></pre>
+</li>
+<li>
+<p>版本比较</p>
+<ul>
+<li>比较工作空间和暂存目录<pre><code class="language-shell">git diff
+</code></pre>
+</li>
+<li>比较两个历史快照<pre><code class="language-shell">git diff 快照id1 快照id2
+</code></pre>
+</li>
+<li>比较当前工作去和仓库中的快照<pre><code class="language-shell">git diff 快照id
+</code></pre>
+</li>
+<li>比较暂存区和仓库的快照(不加快照id默认是HEAD指向的版本)<pre><code class="language-shell">git diff --cached 快照ud
+</code></pre>
+</li>
+<li>奥义图<br>
+<img src="https://for-markdown.oss-cn-shanghai.aliyuncs.com/1543226372637.png" alt="" loading="lazy"></li>
+</ul>
+</li>
+<li>
+<p>其他</p>
+<ul>
+<li>更正最新一次的提交备注<pre><code class="language-shell">git commit --amend -m &quot;description&quot;
+</code></pre>
+</li>
+<li>删除文件（除了删除工作区域和暂存区域的该文件外，还需要修改仓库HEAD指向，将其指向上一个版本，上个版本是不包含该文件的）<pre><code class="language-shell">git rm &lt;file&gt;
+git reset --soft HEAD~
+</code></pre>
+</li>
+<li>删除暂存区域的文件， 不会删除工作目录的文件<pre><code class="language-shell">git rm --cached &lt;file&gt;
+</code></pre>
+</li>
+<li>重命名文件<pre><code class="language-shell">git mv &lt;oldname&gt; &lt;newname&gt;
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="git分支">Git分支</h2>
+<ul>
+<li>创建新分支<pre><code class="language-shell">git branch &lt;branchname&gt;
+</code></pre>
+</li>
+<li>--decorate:下那是tag信息； --oneline:精简显示每个快照； --graph:图形化显示<pre><code class="language-shell">git log --decorate --oneline --graph -all
+</code></pre>
+</li>
+<li>切换分支，此时HEAD指针会指向切换的分支上<pre><code class="language-shell">git checkout &lt;brachname&gt;
+git checkout -b &lt;branchname&gt;		#创建分支，并切换到新分支中
+</code></pre>
+</li>
+<li>合并分支<pre><code class="language-shell">git merge &lt;branchname&gt;
+</code></pre>
+</li>
+<li>删除分支<pre><code class="language-shell">git branch -d &lt;branchname&gt;
+</code></pre>
+</li>
+</ul>
+<h2 id="ssh授权">ssh授权</h2>
+<ol>
+<li>授权命令，以生成公钥和私钥： <code>ssh-keygen -t rsa</code></li>
+<li>在github上的settings-&gt;SSH and GPG keys中添加公钥</li>
+<li>验证是否授权成功：<code>ssh -T git@github.com</code></li>
+</ol>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[入坑Nginx]]></title>
         <id>https://daffupman.github.io/yjClS6znS/</id>

@@ -7,7 +7,7 @@
 <title>
     
 </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615644956748">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615686313127">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
@@ -27,7 +27,7 @@
     <div class="nav">
         <div class="logo">
             <a href="https://daffupman.github.io">
-                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615644956748" alt="">
+                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615686313127" alt="">
             </a>
             <div class="site-title">
                 <h1>
@@ -99,6 +99,175 @@
         
             <article class="post i-card">
                 <h2 class="post-title">
+                    <a href="https://daffupman.github.io/br1NMVbE5/">
+                        Git操作指南
+                    </a>
+                </h2>
+                <div class="post-info">
+                    <time class="post-time">2021-03-14</time>
+                    
+                        <a href="https://daffupman.github.io/SfRQdaNBV/" class="post-tag i-tag
+                            i-tag-other_4">
+            #git
+        </a>
+                        
+                </div>
+                <div class="post-article">
+                    
+                        <a href="https://daffupman.github.io/br1NMVbE5/" class="post-feature-image" style="background-image:url(https://for-markdown.oss-cn-shanghai.aliyuncs.com/git_cover.jfif) ">
+                        </a>
+                        
+                            <div class="post-content">
+                                
+                                        <div class="post-content-content">
+                                            快速上手
+
+git下载地址：https://git-scm.com/
+配置用户信息git config --global user.name = &amp;lt;username&amp;gt;   # 配置用户名，加&amp;quot;&amp;quot;
+git config --global user.email = &amp;lt;useremail&amp;gt;    # 配置邮箱，加&amp;quot;&amp;quot;
+git config --list # 查询配置信息
+
+
+创建目录并初始化仓库，会生成一个.git的隐藏文件夹git init &amp;lt;dirName&amp;gt;
+
+
+关联远程仓库git remote add &amp;lt;name&amp;gt; &amp;lt;url&amp;gt;		# 添加远程仓库
+git remote						#列出所有远程仓库
+
+
+复制远程仓库中的项目git clone &amp;lt;url&amp;gt;
+
+
+文件提交git add &amp;lt;file&amp;gt;						#把文件从workspace添加进index中
+git commit &amp;lt;file&amp;gt; -m &amp;lt;comment&amp;gt;		#把文件从index添加进repostory中
+
+
+从远程仓库更新项目git pull &amp;lt;name&amp;gt; master
+
+
+提交到远程仓库git push &amp;lt;name&amp;gt; master
+
+
+
+Git原理
+Git工作空间
+
+Git常用命令
+
+
+查看当前状态
+git status
+
+
+
+把指定文件恢复到暂存区
+git reset HEAD &amp;lt;file&amp;gt;
+
+
+
+把暂存区的文件恢复并覆盖到工作区
+git checkout -- &amp;lt;file&amp;gt;
+
+
+
+查看提交历史
+git log
+
+
+
+文件在各个空间的切换
+
+HEAD指针指向仓库中的当前版本：HEAD~n,表示前第n个版本；
+移动HEAD指向，指向上一个快照；再将指针指向的快照回滚带暂存区（默认情况）
+git reset --mixed HEAD~
+
+移动HEAD指针的指向，指向上一个快照
+git reset --soft HEAD~
+
+移动HEAD指针的指向，指向上一个快照；将指向的快照回滚到暂存区；将暂存区的文件还原到工作区
+git reset --hard HEAD~
+
+
+
+版本回滚
+回滚到指定快照
+git log			#查看快照id（一串哈希值）
+git reset [id]	#回到该id快照
+
+
+
+版本比较
+
+比较工作空间和暂存目录git diff
+
+
+比较两个历史快照git diff 快照id1 快照id2
+
+
+比较当前工作去和仓库中的快照git diff 快照id
+
+
+比较暂存区和仓库的快照(不加快照id默认是HEAD指向的版本)git diff --cached 快照ud
+
+
+奥义图
+
+
+
+
+其他
+
+更正最新一次的提交备注git commit --amend -m &amp;quot;description&amp;quot;
+
+
+删除文件（除了删除工作区域和暂存区域的该文件外，还需要修改仓库HEAD指向，将其指向上一个版本，上个版本是不包含该文件的）git rm &amp;lt;file&amp;gt;
+git reset --soft HEAD~
+
+
+删除暂存区域的文件， 不会删除工作目录的文件git rm --cached &amp;lt;file&amp;gt;
+
+
+重命名文件git mv &amp;lt;oldname&amp;gt; &amp;lt;newname&amp;gt;
+
+
+
+
+
+Git分支
+
+创建新分支git branch &amp;lt;branchname&amp;gt;
+
+
+--decorate:下那是tag信息； --oneline:精简显示每个快照； --graph:图形化显示git log --decorate --oneline --graph -all
+
+
+切换分支，此时HEAD指针会指向切换的分支上git checkout &amp;lt;brachname&amp;gt;
+git checkout -b &amp;lt;branchname&amp;gt;		#创建分支，并切换到新分支中
+
+
+合并分支git merge &amp;lt;branchname&amp;gt;
+
+
+删除分支git branch -d &amp;lt;branchname&amp;gt;
+
+
+
+ssh授权
+
+授权命令，以生成公钥和私钥： ssh-keygen -t rsa
+在github上的settings-&amp;gt;SSH and GPG keys中添加公钥
+验证是否授权成功：ssh -T git@github.com
+
+
+                                        </div>
+                                        
+                                            <a class="btn btn-text" href="https://daffupman.github.io/br1NMVbE5/">Read More ~</a>
+                            </div>
+                </div>
+            </article>
+            
+            <article class="post i-card">
+                <h2 class="post-title">
                     <a href="https://daffupman.github.io/yjClS6znS/">
                         入坑Nginx
                     </a>
@@ -107,14 +276,14 @@
                     <time class="post-time">2021-03-13</time>
                     
                         <a href="https://daffupman.github.io/GtUvQZM-R/" class="post-tag i-tag
-                            i-tag-error">
+                            i-tag-other_1">
             #nginx
         </a>
                         
                 </div>
                 <div class="post-article">
                     
-                        <a href="https://daffupman.github.io/yjClS6znS/" class="post-feature-image" style="background-image:url(https://for-markdown.oss-cn-shanghai.aliyuncs.com/OIP.jfif) ">
+                        <a href="https://daffupman.github.io/yjClS6znS/" class="post-feature-image" style="background-image:url(https://for-markdown.oss-cn-shanghai.aliyuncs.com/what-is-nginx.png) ">
                         </a>
                         
                             <div class="post-content">
@@ -471,7 +640,7 @@ crontab -l // 查看任务列表
                     <time class="post-time">2020-11-23</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-other_1">
+                            i-tag-primary">
             #mysql
         </a>
                         
@@ -566,7 +735,7 @@ sync_binlog=1 # 几次事务后执行同步
                     <time class="post-time">2020-11-10</time>
                     
                         <a href="https://daffupman.github.io/odW_eMmv5/" class="post-tag i-tag
-                            i-tag-error">
+                            i-tag-primary">
             #redis
         </a>
                         
@@ -854,7 +1023,7 @@ RDB和AOF可以一起使用，RDB做冷备，可在不同时期对不同版本�
                     <time class="post-time">2020-11-07</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-banana">
+                            i-tag-other_2">
             #mysql
         </a>
                         
@@ -1310,7 +1479,7 @@ idle-timeout：一个链接idle状态的最大时长，超时则被释放。
                     <time class="post-time">2020-11-07</time>
                     
                         <a href="https://daffupman.github.io/khKtXDURs/" class="post-tag i-tag
-                            i-tag-">
+                            i-tag-warning">
             #shiro
         </a>
                         
@@ -1416,7 +1585,7 @@ DENSE_RANK()
                     <time class="post-time">2020-11-06</time>
                     
                         <a href="https://daffupman.github.io/UPO6go_NY/" class="post-tag i-tag
-                            i-tag-success">
+                            i-tag-other_1">
             #mysql
         </a>
                         
@@ -1884,7 +2053,7 @@ InnoDB中的锁
                     <!-- 个人信息 -->
                     
     <div class="id_card i-card">
-        <div class="id_card-avatar" style="background-image: url(https://daffupman.github.io/images/avatar.png?v=1615644956748)">
+        <div class="id_card-avatar" style="background-image: url(https://daffupman.github.io/images/avatar.png?v=1615686313127)">
         </div>
         <h1 class="id_card-title">
             

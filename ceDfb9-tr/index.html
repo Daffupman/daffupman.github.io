@@ -7,7 +7,7 @@
 <title>
     分布式文件系统FastDFS | 
 </title>
-<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615704376352">
+<link rel="shortcut icon" href="https://daffupman.github.io/favicon.ico?v=1615718223582">
 <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
@@ -35,7 +35,7 @@
     <div class="nav">
         <div class="logo">
             <a href="https://daffupman.github.io">
-                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615704376352" alt="">
+                <img class="avatar" src="https://daffupman.github.io/images/avatar.png?v=1615718223582" alt="">
             </a>
             <div class="site-title">
                 <h1>
@@ -176,13 +176,13 @@ vi storage.conf
 
 # 修改内容如下
 # 修改组名 
-group_name=daff
+group_name=daff01
 # 修改storage的工作空间 
 base_path=/usr/local/fastdfs-6.04/storage 
 # 修改storage的存储空间 
 store_path0=/usr/local/fastdfs-6.04/storage 
 # 修改tracker的地址和端口号，用于心跳 
-tracker_server=192.168.65.70:22122 
+tracker_server=192.168.65.20:22122 
 # 后续结合nginx的一个对外服务端口号 
 http.server_port=8888
 </code></pre>
@@ -203,8 +203,55 @@ ps -ef|grep tracker
 </li>
 <li>
 <p>fastdfs的nginx模块</p>
-<pre><code class="language-shell">tar -zxvf fastdfs-nginx-module-1.22.tar.gz
+<pre><code class="language-shell">tar -zxvf fastdfs-nginx-module-1.22.tar.gz -C /usr/local
 cp mod_fastdfs.conf /etc/fdfs
+# 修改mod_fastdfs.config文件
+base_path=/usr/local/fastdfs-6.04/tmp 
+tracker_server=192.168.65.20:22122 
+group_name=daff01
+url_have_group_name = true
+store_path0=/usr/local/fastdfs-6.04/storage
+
+vi /usr/local/fastdfs-nginx-module-1.22/src/config # 修改config文件，将两处的/usr/local/include的路径删除local
+# 重新配置nginx
+./configure \
+    --prefix=/usr/local/nginx-1.18.0 \
+    --pid-path=/var/run/nginx/nginx.pid \
+    --lock-path=/var/lock/nginx.lock \
+    --error-log-path=/var/log/nginx/error.log \
+    --http-log-path=/var/log/nginx/access.log \
+    --with-http_gzip_static_module \
+    --http-client-body-temp-path=/var/temp/nginx/client \
+    --http-proxy-temp-path=/var/temp/nginx/proxy \
+    --http-fastcgi-temp-path=/var/temp/nginx/fastcgi \
+    --http-uwsgi-temp-path=/var/temp/nginx/uwsgi \
+    --http-scgi-temp-path=/var/temp/nginx/scgi \
+    --add-module=/usr/local/fastdfs-nginx-module-1.22/src
+make &amp; make install # 编译和安装
+
+# nginx配置文件增加访问文件路径
+server {
+    listen 8888;
+    server_name localhost;
+    location /daff01/M00 {
+        ngx_fastdfs_module;
+    }
+}
+
+./nginx # 启动nginx
+</code></pre>
+</li>
+<li>
+<p>测试</p>
+<pre><code class="language-shell"># 配置client.conf
+vi /etc/fdfs/client.conf
+base_path=/usr/local/fastdfs-6.04/client
+tracker_server=192.168.65.20:22122
+
+# 使用测试图片上传
+/usr/bin/fdfs_test /etc/fdfs/client.conf upload /opt/what-is-nginx.png
+# 访问
+http://192.168.65.20:8888/daff01/M00/00/00/wKhBFGBOUDiAdfcvAAATbWLJjlE268_big.png
 </code></pre>
 </li>
 </ol>
